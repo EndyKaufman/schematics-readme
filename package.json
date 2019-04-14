@@ -81,7 +81,8 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --timeout 1000000",
     "watch": "rimraf lib && tsc --watch",
     "run": "node ./bin/run",
-    "run-fake-generator": "npm run run -- test/fixtures/fake-generator"
+    "run-fake-generator": "npm run run -- test/fixtures/fake-generator",
+    "run-fake-generator-js": "cd test/fixtures/fake-generator && node ./../../../bin/run"
   },
   "types": "lib/index.d.ts"
 }
