@@ -154,7 +154,7 @@ export function loadGenerator(rootPath: string, path: string): IGenerator {
 
 export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
     return new Promise((resolve, reject) =>
-        recursive(rootPath, ['!*schema.json'], (err, files) => {
+        recursive(join(rootPath, 'src'), ['!*schema.json'], (err, files) => {
             if (err || !Array.isArray(files)) {
                 reject(err);
             } else {
@@ -186,9 +186,9 @@ ${devDependenciesMarkdown}`;
         let parametrsMarkdown = '';
         if (generator.properties && Object.keys(generator.properties).length > 0) {
             const parametrs = Object.keys(generator.properties).map((key, index) => {
-                const property = generator.properties[key];
-                const required = generator.required.indexOf(key) !== -1 ? '*required* ' : '';
-                const defaultValue = (property.$default || property.default) ? JSON.stringify((property.$default || property.default)) : 'none';
+                const property: any = generator.properties ? generator.properties[key] : {};
+                const required: string = (generator.required && generator.required.indexOf(key) !== -1) ? '*required* ' : '';
+                const defaultValue: string = (property && (property.$default || property.default)) ? JSON.stringify((property.$default || property.default)) : 'none';
                 return `| ${key} | ${required}{${property.type}} | ${property.description} | ${defaultValue} |`;
             }).join('\n');
             parametrsMarkdown = `
