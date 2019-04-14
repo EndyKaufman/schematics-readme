@@ -139,7 +139,7 @@ export function saveCollection(rootPath: string, collection: ICollection) {
 }
 export function loadGenerator(rootPath: string, path: string): IGenerator {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
-    const title = (schema.title || schema.id.replace(new RegExp('-', 'g'), ' '));
+    const title = (schema.title || schema.id).replace(new RegExp('-', 'g'), ' ');
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
     const localPath = resolve(path).replace(resolve(join(rootPath, 'src')), '');
     return {
@@ -148,7 +148,7 @@ export function loadGenerator(rootPath: string, path: string): IGenerator {
         localPath,
         ...schema,
         title: title,
-        description: schema.description || ''
+        description: (schema.description || '')
     };
 }
 
