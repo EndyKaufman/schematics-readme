@@ -18,6 +18,10 @@ Generator `README.md` file for [Angular Schematics](https://angular.io/guide/sch
 npm i -g schematics-readme
 ```
 
+## Links
+
+[Fake generator](https://github.com/EndyKaufman/schematics-readme/blob/master/test/fixtures/fake-generator/README.md) - Fake generator for test.
+
 # Usage
 Open folder with schematic workspace and run
 ```bash
