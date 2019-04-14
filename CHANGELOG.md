@@ -1,3 +1,12 @@
+## [0.0.5](https://github.com/EndyKaufman/schematics-readme/compare/0.0.4...0.0.5) (2019-04-14)
+
+
+### Bug Fixes
+
+* Add src folder as start folder for scan schema.json files ([f028975](https://github.com/EndyKaufman/schematics-readme/commit/f028975))
+
+
+
 ## [0.0.4](https://github.com/EndyKaufman/schematics-readme/compare/0.0.3...0.0.4) (2019-04-14)
 
 
