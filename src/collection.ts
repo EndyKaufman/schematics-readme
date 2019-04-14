@@ -139,13 +139,16 @@ export function saveCollection(rootPath: string, collection: ICollection) {
 }
 export function loadGenerator(rootPath: string, path: string): IGenerator {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
-    const name = schema.title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
+    const title = (schema.title || schema.id.replace(new RegExp('-', 'g'), ' '));
+    const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
     const localPath = resolve(path).replace(resolve(join(rootPath, 'src')), '');
     return {
         name,
         path,
         localPath,
-        ...schema
+        ...schema,
+        title: title,
+        description: schema.description || ''
     };
 }
 
@@ -242,6 +245,12 @@ ${title}:
 \`\`\`bash
 ${examples}
 \`\`\``;
+        } else {
+            exampleMarkdown = `
+Example:
+\`\`\`bash
+schematics ${rootPackage.name}:${generator.id}
+\`\`\``;
         }
         return exampleMarkdown;
     }
@@ -249,7 +258,7 @@ ${examples}
 export function createHeader(rootPackage: IPackage, generators: IGenerator[]) {
     const generatorsMarkdown = generators.map(
         generator =>
-            `* [${generator.title}](#${generator.name}) - ${generator.description}`
+            `* [${generator.title}](#${generator.name}) - ${generator.description || generator.id}`
     ).join('\n');
     return `
 * [Install](#install)
@@ -290,11 +299,19 @@ export async function transformGeneratorsToMarkdown(rootPath: string): Promise<I
     ].join('\n');
     const before = rootReadme.split(START_GENERATORS)[0];
     const after = rootReadme.split(STOP_GENERATORS)[1];
-    const newContent = rootReadme.replace(
-        rootReadme,
-        [before + START_GENERATORS, newReadme, STOP_GENERATORS + after].join('\n')
-    );
-    saveRootReadme(rootPath, newContent);
+    if (after) {
+        const newContent = rootReadme.replace(
+            rootReadme,
+            [before + START_GENERATORS, newReadme, STOP_GENERATORS + after].join('\n')
+        );
+        saveRootReadme(rootPath, newContent);
+    } else {
+        const newContent = rootReadme.replace(
+            rootReadme,
+            [before + START_GENERATORS, newReadme, STOP_GENERATORS].join('\n')
+        );
+        saveRootReadme(rootPath, newContent);
+    }
     return generators;
 }
 export async function transformGeneratorsToCollections(rootPath: string): Promise<any> {
