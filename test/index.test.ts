@@ -20,6 +20,6 @@ describe('schematics-readme', () => {
     .stderr()
     .do(() => cmd.run(['test/fixtures/fake-generator']))
     .it('test/fixtures/fake-generator', ctx => {
-      expect(ctx.stdout).to.contain(`Collected 2 generators!`);
+      expect(ctx.stdout).to.contain(`Collected 3 generators!`);
     });
 });

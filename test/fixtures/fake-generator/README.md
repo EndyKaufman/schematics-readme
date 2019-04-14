@@ -21,8 +21,25 @@ schematics fake-generator:<generator name> <arguments>
 ```
 
 # Available generators
+* [generator 3](#generator-3) - generator-3
 * [Generator 2](#generator-2) - Description for generator 2
 * [Generator 1](#generator-1) - Description for generator 1
+## generator 3
+
+
+Example:
+```bash
+schematics fake-generator:generator-3
+```
+
+### Parameters
+| Name | Type | Description | Default |
+|------|:----:|------------:|--------:|
+| with-default | {string} | With default. | "." |
+| with-named | *required* {string} | With named | none |
+
+
+
 ## Generator 2
 Description for generator 2
 

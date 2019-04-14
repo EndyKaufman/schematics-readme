@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    "generator-3": {
+      "description": "",
+      "factory": "./generator-4",
+      "schema": "./generator-4/schema.json"
+    },
     "generator-2": {
       "description": "Description for generator 2",
       "factory": "./folder/generator-2",
