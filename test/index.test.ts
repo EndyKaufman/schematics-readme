@@ -6,23 +6,12 @@ import cmd = require('../src');
 describe('schematics-readme', () => {
   beforeEach(done => {
     writeFileSync(
-      'test/fixtures/fake-generator_sources/src/collection.json',
-      readFileSync('test/fixtures/fake-generator/src/collection.json').toString()
+      'test/fixtures/fake-generator/src/collection.json',
+      readFileSync('test/fixtures/fake-generator_sources/src/collection.json').toString()
     );
     writeFileSync(
-      'test/fixtures/fake-generator_sources/README.md',
-      readFileSync('test/fixtures/fake-generator/README.md').toString()
-    );
-    done();
-  });
-  afterEach(done => {
-    writeFileSync(
-      'test/fixtures/fake-generator_sources/src/collection.json',
-      readFileSync('test/fixtures/fake-generator/src/collection.json').toString()
-    );
-    writeFileSync(
-      'test/fixtures/fake-generator_sources/README.md',
-      readFileSync('test/fixtures/fake-generator/README.md').toString()
+      'test/fixtures/fake-generator/README.md',
+      readFileSync('test/fixtures/fake-generator_sources/README.md').toString()
     );
     done();
   });
