@@ -1,3 +1,12 @@
+## [0.0.4](https://github.com/EndyKaufman/schematics-readme/compare/0.0.3...0.0.4) (2019-04-14)
+
+
+### Bug Fixes
+
+* Detect . as process.cwd() ([2b7c281](https://github.com/EndyKaufman/schematics-readme/commit/2b7c281))
+
+
+
 ## [0.0.3](https://github.com/EndyKaufman/schematics-readme/compare/0.0.2...0.0.3) (2019-04-14)
 
 
