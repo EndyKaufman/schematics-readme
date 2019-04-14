@@ -13,6 +13,9 @@ class SchematicsReadmeCli extends Command {
     if (!args.path) {
       args.path = '.';
     }
+    if (args.path === '.') {
+      args.path = process.cwd();
+    }
     try {
       const generators = await transformGeneratorsToMarkdown(
         args.path
