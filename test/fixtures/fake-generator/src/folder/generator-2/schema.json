@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "generator-2",
+    "type": "object",
+    "title": "Generator 2",
+    "description": "Description for generator 2",
+    "examples": [
+        "generator-2 --with-default . --with-named name"
+    ],
+    "dependencies": {
+        "typescript": "*"
+    },
+    "devDependencies": {
+        "tslint": "5.5.5"
+    },
+    "properties": {
+        "with-default": {
+            "type": "string",
+            "description": "With default.",
+            "default": "."
+        },
+        "with-named": {
+            "description": "With named",
+            "type": "string",
+            "x-prompt": "Please set named"
+        }
+    },
+    "required": [
+        "with-named"
+    ]
+}

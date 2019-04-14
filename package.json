@@ -1,0 +1,87 @@
+{
+  "name": "schematics-readme",
+  "description": "Generator README.md file for Angular Schematics collection",
+  "version": "0.0.1",
+  "author": {
+    "name": "EndyKaufman",
+    "email": "admin@site15.ru"
+  },
+  "bin": {
+    "schematics-readme": "./bin/run"
+  },
+  "bugs": {
+    "url": "https://github.com/EndyKaufman/schematics-readme/issues"
+  },
+  "homepage": "https://github.com/EndyKaufman/schematics-readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EndyKaufman/schematics-readme.git"
+  },
+  "dependencies": {
+    "@oclif/color": "0.0.0",
+    "@oclif/command": "^1.5.8",
+    "@oclif/config": "^1.12.4",
+    "@oclif/plugin-help": "^2.1.6",
+    "@types/cli-progress": "^1.8.0",
+    "@types/recursive-readdir": "^2.2.0",
+    "@types/semver-diff": "^2.1.1",
+    "cli-progress": "^2.1.1",
+    "recursive-readdir": "^2.2.2",
+    "semver-diff": "^2.1.0",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.21.0",
+    "@oclif/test": "^1.2.2",
+    "@oclif/tslint": "^3.1.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.19",
+    "chai": "^4.2.0",
+    "conventional-changelog-cli": "^2.0.11",
+    "conventional-commits-detector": "^1.0.2",
+    "conventional-recommended-bump": "^4.0.4",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1"
+  },
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6.4.0"
+  },
+  "files": [
+    "/bin",
+    "/lib"
+  ],
+  "keywords": [
+    "angular",
+    "schematics",
+    "generator",
+    "readme",
+    "info",
+    "nx",
+    "library",
+    "oclif",
+    "cli",
+    "console",
+    "tools",
+    "input"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "bin": "schematics-readme"
+  },
+  "scripts": {
+    "posttest": "tslint -p test -t stylish",
+    "prepack": "rm -rf lib && tsc -b",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --timeout 1000000",
+    "watch": "rimraf lib && tsc --watch",
+    "run": "node ./bin/run",
+    "run-fake-generator": "npm run run -- test/fixtures/fake-generator"
+  },
+  "types": "lib/index.d.ts"
+}
