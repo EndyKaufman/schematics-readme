@@ -11,7 +11,8 @@
         "typescript": "./files/package.json"
     },
     "devDependencies": {
-        "tslint": "./files/package.json"
+        "tslint": "./files/package.json",
+        "eslint": "^"
     },
     "properties": {
         "with-default-argv": {

@@ -48,6 +48,7 @@ schematics fake-generator:generator-2 --with-default . --with-named name
 | Name | Used | Current |
 | ------ | ------ | ------ |
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+| [jest](https://www.npmjs.com/package/jest) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/jest) | [![NPM version](https://badge.fury.io/js/jest.svg)](https://www.npmjs.com/package/jest) |
 
 ## generator 4
 
@@ -89,6 +90,7 @@ schematics fake-generator:generator-1 argv0 --with-default . --with-named name
 | Name | Used | Current |
 | ------ | ------ | ------ |
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+| [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
 
 ## generator 6
 

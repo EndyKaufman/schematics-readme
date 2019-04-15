@@ -63,9 +63,15 @@ export interface IGenerator {
 export function collectGenerator(rootPath: string, path: string): IGenerator {
     const generator: IGenerator = loadGenerator(rootPath, path);
     const rootPackage: IPackage = loadRootPackage(rootPath);
+    let prevVersion: string;
     if (generator.mainDependencies) {
         if (rootPackage) {
+            prevVersion = '';
             Object.keys(generator.mainDependencies).forEach((depName: string) => {
+                if (prevVersion && generator.mainDependencies[depName] === '^') {
+                    generator.mainDependencies[depName] = prevVersion;
+                }
+                prevVersion = generator.mainDependencies[depName];
                 const value = rootPackage.dependencies[depName];
                 if (generator.mainDependencies[depName] === '*' && value) {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
@@ -77,7 +83,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                 }
             });
         }
+        prevVersion = '';
         Object.keys(generator.mainDependencies).forEach((depName: string) => {
+            if (prevVersion && generator.mainDependencies[depName] === '^') {
+                generator.mainDependencies[depName] = prevVersion;
+            }
+            prevVersion = generator.devDependencies[depName];
             const value = generator.mainDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
@@ -87,6 +98,7 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                         readFileSync(depPath).toString()
                     )
                 };
+                prevVersion = generator.mainDependencies[depName];
                 if (depPackage.dependencies && depPackage.dependencies[depName]) {
                     generator.mainDependencies[depName] = depPackage.dependencies[depName];
                 }
@@ -98,7 +110,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
     }
     if (generator.devDependencies) {
         if (rootPackage) {
+            prevVersion = '';
             Object.keys(generator.devDependencies).forEach((depName: string) => {
+                if (prevVersion && generator.devDependencies[depName] === '^') {
+                    generator.devDependencies[depName] = prevVersion;
+                }
+                prevVersion = generator.devDependencies[depName];
                 const value = rootPackage.devDependencies[depName];
                 if (generator.devDependencies[depName] === '*' && value) {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
@@ -110,7 +127,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                 }
             });
         }
+        prevVersion = '';
         Object.keys(generator.devDependencies).forEach((depName: string) => {
+            if (prevVersion && generator.devDependencies[depName] === '^') {
+                generator.devDependencies[depName] = prevVersion;
+            }
+            prevVersion = generator.devDependencies[depName];
             const value = generator.devDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);

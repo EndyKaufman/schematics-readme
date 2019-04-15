@@ -11,7 +11,8 @@
         "typescript": "*"
     },
     "devDependencies": {
-        "tslint": "5.5.5"
+        "tslint": "5.5.5",
+        "jest": "^"
     },
     "properties": {
         "with-default": {
