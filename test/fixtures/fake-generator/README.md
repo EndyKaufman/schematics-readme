@@ -21,26 +21,10 @@ schematics fake-generator:<generator name> <arguments>
 ```
 
 # Available generators
-* [generator 6](#generator-6) - generator-6
 * [Generator 2](#generator-2) - Description for generator 2
 * [generator 4](#generator-4) - generator-4
 * [Generator 1](#generator-1) - Description for generator 1
-## generator 6
-
-
-Example:
-```bash
-schematics fake-generator:generator-6
-```
-
-### Parameters
-| Name | Type | Description | Default |
-|------|:----:|------------:|--------:|
-| with-default | {string} | With default. | "." |
-| with-named | *required* {string} | With named | none |
-
-
-
+* [generator 6](#generator-6) - generator-6
 ## Generator 2
 Description for generator 2
 
@@ -105,6 +89,22 @@ schematics fake-generator:generator-1 argv0 --with-default . --with-named name
 | Name | Used | Current |
 | ------ | ------ | ------ |
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+
+## generator 6
+
+
+Example:
+```bash
+schematics fake-generator:generator-6
+```
+
+### Parameters
+| Name | Type | Description | Default |
+|------|:----:|------------:|--------:|
+| with-default | {string} | With default. | "." |
+| with-named | *required* {string} | With named | none |
+
+
 
 <!-- generatorsstop -->
 

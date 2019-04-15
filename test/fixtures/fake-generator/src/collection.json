@@ -1,6 +1,21 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    "generator-2": {
+      "description": "Description for generator 2",
+      "factory": "./folder/generator-2",
+      "schema": "./folder/generator-2/schema.json"
+    },
+    "generator-4": {
+      "description": "",
+      "factory": "./folder/generator-4",
+      "schema": "./folder/generator-4/schema.json"
+    },
+    "generator-1": {
+      "description": "Description for generator 1",
+      "factory": "./generator-1",
+      "schema": "./generator-1/schema.json"
+    },
     "generator-3": {
       "description": "Description for generator 3",
       "factory": "./generator-3",
@@ -17,21 +32,6 @@
       "description": "",
       "factory": "./generator-6",
       "schema": "./generator-6/schema.json"
-    },
-    "generator-2": {
-      "description": "Description for generator 2",
-      "factory": "./folder/generator-2",
-      "schema": "./folder/generator-2/schema.json"
-    },
-    "generator-4": {
-      "description": "",
-      "factory": "./folder/generator-4",
-      "schema": "./folder/generator-4/schema.json"
-    },
-    "generator-1": {
-      "description": "Description for generator 1",
-      "factory": "./generator-1",
-      "schema": "./generator-1/schema.json"
     }
   }
 }

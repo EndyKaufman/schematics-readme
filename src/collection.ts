@@ -195,7 +195,7 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
                 reject(err);
             } else {
                 const generators: IGenerator[] =
-                    files.map(file =>
+                    files.sort().map(file =>
                         collectGenerator(rootPath, file)
                     );
                 resolve(
