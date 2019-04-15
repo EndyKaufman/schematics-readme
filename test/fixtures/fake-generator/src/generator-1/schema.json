@@ -7,7 +7,7 @@
     "examples": [
         "generator-1 argv0 --with-default . --with-named name"
     ],
-    "dependencies": {
+    "mainDependencies": {
         "typescript": "./files/package.json"
     },
     "devDependencies": {

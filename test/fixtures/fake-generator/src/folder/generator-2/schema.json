@@ -7,7 +7,7 @@
     "examples": [
         "generator-2 --with-default . --with-named name"
     ],
-    "dependencies": {
+    "mainDependencies": {
         "typescript": "*"
     },
     "devDependencies": {

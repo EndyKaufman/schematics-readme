@@ -50,7 +50,7 @@ export interface IGenerator {
     title: string;
     description: string;
     examples: string[];
-    dependencies: {
+    mainDependencies: {
         [key: string]: string
     };
     devDependencies: {
@@ -63,22 +63,22 @@ export interface IGenerator {
 export function collectGenerator(rootPath: string, path: string): IGenerator {
     const generator: IGenerator = loadGenerator(rootPath, path);
     const rootPackage: IPackage = loadRootPackage(rootPath);
-    if (generator.dependencies) {
+    if (generator.mainDependencies) {
         if (rootPackage) {
-            Object.keys(generator.dependencies).forEach((depName: string) => {
+            Object.keys(generator.mainDependencies).forEach((depName: string) => {
                 const value = rootPackage.dependencies[depName];
-                if (generator.dependencies[depName] === '*' && value) {
+                if (generator.mainDependencies[depName] === '*' && value) {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                        generator.dependencies[depName] = value;
+                        generator.mainDependencies[depName] = value;
                     }
                     if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                        generator.dependencies[depName] = value;
+                        generator.mainDependencies[depName] = value;
                     }
                 }
             });
         }
-        Object.keys(generator.dependencies).forEach((depName: string) => {
-            const value = generator.dependencies[depName];
+        Object.keys(generator.mainDependencies).forEach((depName: string) => {
+            const value = generator.mainDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
             if (existsSync(depPath)) {
@@ -88,10 +88,10 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                     )
                 };
                 if (depPackage.dependencies && depPackage.dependencies[depName]) {
-                    generator.dependencies[depName] = depPackage.dependencies[depName];
+                    generator.mainDependencies[depName] = depPackage.dependencies[depName];
                 }
                 if (depPackage.devDependencies && depPackage.devDependencies[depName]) {
-                    generator.dependencies[depName] = depPackage.devDependencies[depName];
+                    generator.mainDependencies[depName] = depPackage.devDependencies[depName];
                 }
             }
         });
@@ -208,7 +208,7 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
 export function transformGeneratorToMarkdown(rootPackage: IPackage, generator: IGenerator): string {
     const exampleMarkdown = generateExamples();
     const parametrsMarkdown = generateParametrs();
-    const dependenciesMarkdown = generateDependencies('dependencies');
+    const dependenciesMarkdown = generateDependencies('mainDependencies');
     const devDependenciesMarkdown = generateDependencies('devDependencies');
     return `## ${generator.title}
 ${generator.description}
@@ -239,7 +239,7 @@ ${parametrs}`;
         }
         return parametrsMarkdown;
     }
-    function generateDependencies(dependenciesType: 'dependencies' | 'devDependencies') {
+    function generateDependencies(dependenciesType: 'mainDependencies' | 'devDependencies') {
         let title = 'Dependencies';
         if (dependenciesType === 'devDependencies') {
             title = 'Dev dependencies';
@@ -258,7 +258,7 @@ ${parametrs}`;
                 ).replace(
                     new RegExp('^', 'g'), ''
                 );
-                const npmUrl = `https://www.npmjs.com/package/key`;
+                const npmUrl = `https://www.npmjs.com/package/${key}`;
                 const currentVersionImage = `https://badge.fury.io/js/${encodeURI(key)}.svg`;
                 const usedVersionImage = `https://img.shields.io/badge/npm_package-${version}-9cf.svg`;
                 return `| [${key}](${npmUrl}) | [![NPM version](${usedVersionImage})](${npmUrl}) | [![NPM version](${currentVersionImage})](${npmUrl}) |`;
