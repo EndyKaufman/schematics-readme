@@ -73,13 +73,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                     generator.mainDependencies[depName] = prevVersion;
                 }
                 prevVersion = generator.mainDependencies[depName];
-                const value = rootPackage.dependencies[depName];
-                if (generator.mainDependencies[depName] === '*' && value) {
-                    if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                        generator.mainDependencies[depName] = value;
-                    }
+                if (generator.mainDependencies[depName] === '*') {
                     if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                        generator.mainDependencies[depName] = value;
+                        generator.mainDependencies[depName] = rootPackage.devDependencies[depName];
+                    }
+                    if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
+                        generator.mainDependencies[depName] = rootPackage.dependencies[depName];
                     }
                 }
             });
@@ -89,7 +88,6 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
             if (prevVersion && generator.mainDependencies[depName] === '^') {
                 generator.mainDependencies[depName] = prevVersion;
             }
-            prevVersion = generator.devDependencies[depName];
             const value = generator.mainDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
@@ -99,12 +97,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                         readFileSync(depPath).toString()
                     )
                 };
-                prevVersion = generator.mainDependencies[depName];
-                if (depPackage.dependencies && depPackage.dependencies[depName]) {
-                    generator.mainDependencies[depName] = depPackage.dependencies[depName];
-                }
+                prevVersion = value;
                 if (depPackage.devDependencies && depPackage.devDependencies[depName]) {
                     generator.mainDependencies[depName] = depPackage.devDependencies[depName];
+                }
+                if (depPackage.dependencies && depPackage.dependencies[depName]) {
+                    generator.mainDependencies[depName] = depPackage.dependencies[depName];
                 }
             }
         });
@@ -117,13 +115,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                     generator.devDependencies[depName] = prevVersion;
                 }
                 prevVersion = generator.devDependencies[depName];
-                const value = rootPackage.devDependencies[depName];
-                if (generator.devDependencies[depName] === '*' && value) {
+                if (generator.devDependencies[depName] === '*') {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                        generator.devDependencies[depName] = value;
+                        generator.devDependencies[depName] = rootPackage.dependencies[depName];
                     }
                     if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                        generator.devDependencies[depName] = value;
+                        generator.devDependencies[depName] = rootPackage.devDependencies[depName];
                     }
                 }
             });
@@ -133,7 +130,6 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
             if (prevVersion && generator.devDependencies[depName] === '^') {
                 generator.devDependencies[depName] = prevVersion;
             }
-            prevVersion = generator.devDependencies[depName];
             const value = generator.devDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
@@ -143,11 +139,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                         readFileSync(depPath).toString()
                     )
                 };
-                if (depFile.devDependencies && depFile.devDependencies[depName]) {
-                    generator.devDependencies[depName] = depFile.devDependencies[depName];
-                }
+                prevVersion = value;
                 if (depFile.dependencies && depFile.dependencies[depName]) {
                     generator.devDependencies[depName] = depFile.dependencies[depName];
+                }
+                if (depFile.devDependencies && depFile.devDependencies[depName]) {
+                    generator.devDependencies[depName] = depFile.devDependencies[depName];
                 }
             }
         });
@@ -288,7 +285,7 @@ ${parametrs}`;
                     new RegExp('^', 'g'), ''
                 );
                 const npmUrl = `https://www.npmjs.com/package/${key}`;
-                const currentVersionImage = `https://badge.fury.io/js/${encodeURI(key)}.svg`;
+                const currentVersionImage = `https://badge.fury.io/js/${encodeURIComponent(key)}.svg`;
                 const usedVersionImage = `https://img.shields.io/badge/npm_package-${version}-9cf.svg`;
                 return `| [${key}](${npmUrl}) | [![NPM version](${usedVersionImage})](${npmUrl}) | [![NPM version](${currentVersionImage})](${npmUrl}) |`;
             }).join('\n');

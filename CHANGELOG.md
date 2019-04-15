@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/EndyKaufman/schematics-readme/compare/0.2.0...0.2.1) (2019-04-15)
+
+
+### Bug Fixes
+
+* Update detect version of dependencies and fix image url for dependencies ([22fe768](https://github.com/EndyKaufman/schematics-readme/commit/22fe768))
+
+
+
 # [0.2.0](https://github.com/EndyKaufman/schematics-readme/compare/0.1.0...0.2.0) (2019-04-15)
 
 

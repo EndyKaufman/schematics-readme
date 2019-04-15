@@ -8,11 +8,13 @@
         "generator-1 argv0 --with-default . --with-named name"
     ],
     "mainDependencies": {
-        "typescript": "./files/package.json"
+        "typescript": "./files/package.json",
+        "@angular/core": "^"
     },
     "devDependencies": {
         "tslint": "./files/package.json",
-        "eslint": "^"
+        "eslint": "^",
+        "@angular/cli": "^"
     },
     "properties": {
         "with-default-argv": {

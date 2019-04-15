@@ -1,9 +1,11 @@
 {
   "dependencies": {
-    "typescript": "1.1.1"
+    "typescript": "1.1.1",
+    "@angular/cli": "3.0.0"
   },
   "devDependencies": {
     "tslint": "2.2.2",
-    "eslint": "9.9.9"
+    "eslint": "9.9.9",
+    "@angular/core": "3.0.0"
   }
 }
