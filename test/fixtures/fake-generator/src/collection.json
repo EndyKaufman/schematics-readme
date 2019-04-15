@@ -21,20 +21,20 @@
       "hidden": true
     },
     "generator-4": {
-      "title": "Generator 4",
+      "title": "generator 4",
       "description": "generator-4",
       "factory": "./folder/generator-4",
       "schema": "./folder/generator-4/schema.json"
     },
     "generator-5": {
-      "title": "Generator 5",
+      "title": "generator 5",
       "description": "generator-5",
       "factory": "./generator-5",
       "schema": "./generator-5/schema.json",
       "hidden": true
     },
     "generator-6": {
-      "title": "Generator 6",
+      "title": "generator 6",
       "description": "generator-6",
       "factory": "./generator-6",
       "schema": "./generator-6/schema.json"
