@@ -1,3 +1,13 @@
+# [0.1.0](https://github.com/EndyKaufman/schematics-readme/compare/0.0.5...0.1.0) (2019-04-15)
+
+
+### Features
+
+* Add create README.md if not exists, and get folder name if package.json not exists or not set name ([9d7313d](https://github.com/EndyKaufman/schematics-readme/commit/9d7313d))
+* Add support exclude generators and properties from readme.md ([51821c7](https://github.com/EndyKaufman/schematics-readme/commit/51821c7))
+
+
+
 ## [0.0.5](https://github.com/EndyKaufman/schematics-readme/compare/0.0.4...0.0.5) (2019-04-14)
 
 
