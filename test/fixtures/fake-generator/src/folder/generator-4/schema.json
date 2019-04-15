@@ -1,25 +1,12 @@
 {
     "$schema": "http://json-schema.org/schema",
-    "id": "generator-3",
+    "id": "generator-4",
     "type": "object",
-    "title": "Generator 3",
-    "description": "Description for generator 3",
-    "examples": [
-        "generator-3 --with-default . --with-named name"
-    ],
-    "hidden": true,
-    "dependencies": {
-        "typescript": "*"
-    },
-    "devDependencies": {
-        "tslint": "*"
-    },
     "properties": {
         "with-default": {
             "type": "string",
             "description": "With default.",
-            "default": ".",
-            "hidden": true
+            "default": "."
         },
         "with-named": {
             "description": "With named",

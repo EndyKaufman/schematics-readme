@@ -24,10 +24,26 @@ export interface IPackage {
         [key: string]: string
     };
 }
+export interface IGeneratorProperty {
+    [key: string]: {
+        description: string
+        type: string;
+        $default?: {
+            $source: 'argv',
+            index: number
+        },
+        default?: string;
+        ['x-prompt']: string;
+        hidden: boolean;
+    };
+}
+export interface IGeneratorProperties {
+    [key: string]: IGeneratorProperty;
+}
 export interface IGenerator {
+    $schema: 'http://json-schema.org/schema';
     path: string;
     localPath: string;
-    $schema: 'http://json-schema.org/schema';
     id: string;
     name: string;
     type: 'object';
@@ -40,18 +56,7 @@ export interface IGenerator {
     devDependencies: {
         [key: string]: string
     };
-    properties: {
-        [key: string]: {
-            description: string
-            type: string;
-            $default?: {
-                $source: 'argv',
-                index: number
-            },
-            default?: string;
-            ['x-prompt']: string;
-        }
-    };
+    properties: IGeneratorProperties;
     required: string[];
     hidden: boolean;
 }
@@ -195,7 +200,6 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
                     );
                 resolve(
                     generators
-                        .filter(generator => !generator.hidden)
                 );
             }
         })
@@ -215,13 +219,18 @@ ${devDependenciesMarkdown}`;
 
     function generateParametrs() {
         let parametrsMarkdown = '';
-        if (generator.properties && Object.keys(generator.properties).length > 0) {
-            const parametrs = Object.keys(generator.properties).map((key, index) => {
-                const property: any = generator.properties ? generator.properties[key] : {};
-                const required: string = (generator.required && generator.required.indexOf(key) !== -1) ? '*required* ' : '';
-                const defaultValue: string = (property && (property.$default || property.default)) ? JSON.stringify((property.$default || property.default)) : 'none';
-                return `| ${key} | ${required}{${property.type}} | ${property.description} | ${defaultValue} |`;
-            }).join('\n');
+        if (
+            generator.properties &&
+            Object.keys(generator.properties).length > 0
+        ) {
+            const parametrs = Object.keys(generator.properties)
+                .filter(propertyKey => !generator.properties[propertyKey].hidden)
+                .map((key, index) => {
+                    const property: any = generator.properties ? generator.properties[key] : {};
+                    const required: string = (generator.required && generator.required.indexOf(key) !== -1) ? '*required* ' : '';
+                    const defaultValue: string = (property && (property.$default || property.default)) ? JSON.stringify((property.$default || property.default)) : 'none';
+                    return `| ${key} | ${required}{${property.type}} | ${property.description} | ${defaultValue} |`;
+                }).join('\n');
             parametrsMarkdown = `
 ### Parameters
 | Name | Type | Description | Default |
@@ -315,7 +324,8 @@ export async function transformGeneratorsToMarkdown(rootPath: string): Promise<I
     const rootReadme: string = loadRootReadme(rootPackage, rootPath);
     let generators: IGenerator[] = [];
     try {
-        generators = await collectGenerators(rootPath);
+        generators = (await collectGenerators(rootPath))
+            .filter(generator => !generator.hidden);
     } catch (error) {
         console.error(error);
     }
@@ -362,7 +372,8 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
                 collections.schematics[generator.id] = {
                     description: generator.description,
                     factory: `.${dirname(generator.localPath)}`,
-                    schema: `.${generator.localPath}`
+                    schema: `.${generator.localPath}`,
+                    ...(generator.hidden ? { hidden: true } : {})
                 };
             }
         );
