@@ -198,7 +198,10 @@ export function saveCollection(rootPath: string, collection: ICollection) {
 }
 export function loadGenerator(rootPath: string, path: string): IGenerator {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
-    const title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
+    let title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
+    if (schema.title && title.length > 0) {
+        title = title.charAt(0).toUpperCase() + title.substr(1);
+    }
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
     const localPath = resolve(path).replace(resolve(join(rootPath, 'src')), '');
     return {
