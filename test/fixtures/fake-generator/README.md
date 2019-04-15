@@ -21,10 +21,36 @@ schematics fake-generator:<generator name> <arguments>
 ```
 
 # Available generators
+* [Generator 1](#generator-1) - Description for generator 1
 * [Generator 2](#generator-2) - Description for generator 2
 * [generator 4](#generator-4) - generator-4
-* [Generator 1](#generator-1) - Description for generator 1
 * [generator 6](#generator-6) - generator-6
+## Generator 1
+Description for generator 1
+
+Example:
+```bash
+schematics fake-generator:generator-1 argv0 --with-default . --with-named name
+```
+
+### Parameters
+| Name | Type | Description | Default |
+|------|:----:|------------:|--------:|
+| with-default-argv | {string} | With default argv. | {"$source":"argv","index":0} |
+| with-default | {string} | With default. | "." |
+| with-named | *required* {string} | With named | none |
+
+### Dependencies
+| Name | Used | Current |
+| ------ | ------ | ------ |
+| [typescript](https://www.npmjs.com/package/typescript) | [![NPM version](https://img.shields.io/badge/npm_package-1.1.1-9cf.svg)](https://www.npmjs.com/package/typescript) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript) |
+
+### Dev dependencies
+| Name | Used | Current |
+| ------ | ------ | ------ |
+| [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+| [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
+
 ## Generator 2
 Description for generator 2
 
@@ -65,32 +91,6 @@ schematics fake-generator:generator-4
 | with-named | *required* {string} | With named | none |
 
 
-
-## Generator 1
-Description for generator 1
-
-Example:
-```bash
-schematics fake-generator:generator-1 argv0 --with-default . --with-named name
-```
-
-### Parameters
-| Name | Type | Description | Default |
-|------|:----:|------------:|--------:|
-| with-default-argv | {string} | With default argv. | {"$source":"argv","index":0} |
-| with-default | {string} | With default. | "." |
-| with-named | *required* {string} | With named | none |
-
-### Dependencies
-| Name | Used | Current |
-| ------ | ------ | ------ |
-| [typescript](https://www.npmjs.com/package/typescript) | [![NPM version](https://img.shields.io/badge/npm_package-1.1.1-9cf.svg)](https://www.npmjs.com/package/typescript) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript) |
-
-### Dev dependencies
-| Name | Used | Current |
-| ------ | ------ | ------ |
-| [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
-| [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
 
 ## generator 6
 

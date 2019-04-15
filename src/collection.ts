@@ -9,6 +9,7 @@ export interface ICollection {
     $schema: './node_modules/@angular-devkit/schematics/collection-schema.json';
     schematics: {
         [key: string]: {
+            title: string;
             description: string;
             factory: string;
             schema: string;
@@ -217,8 +218,11 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
                 reject(err);
             } else {
                 const generators: IGenerator[] =
-                    files.sort().map(file =>
+                    files.map(file =>
                         collectGenerator(rootPath, file)
+                    ).sort(
+                        (a, b) =>
+                            !a ? 0 : a.name.localeCompare(b.name)
                     );
                 resolve(
                     generators
@@ -392,7 +396,8 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
         .forEach(
             generator => {
                 collections.schematics[generator.id] = {
-                    description: generator.description,
+                    title: generator.title || generator.id,
+                    description: generator.description || generator.id,
                     factory: `.${dirname(generator.localPath)}`,
                     schema: `.${generator.localPath}`,
                     ...(generator.hidden ? { hidden: true } : {})
