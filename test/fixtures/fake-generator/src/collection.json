@@ -1,37 +1,43 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    "generator-1": {
+      "title": "Generator 1",
+      "description": "Description for generator 1",
+      "factory": "./generator-1",
+      "schema": "./generator-1/schema.json"
+    },
+    "generator-2": {
+      "title": "Generator 2",
+      "description": "Description for generator 2",
+      "factory": "./folder/generator-2",
+      "schema": "./folder/generator-2/schema.json"
+    },
     "generator-3": {
+      "title": "Generator 3",
       "description": "Description for generator 3",
       "factory": "./generator-3",
       "schema": "./generator-3/schema.json",
       "hidden": true
     },
+    "generator-4": {
+      "title": "generator 4",
+      "description": "generator-4",
+      "factory": "./folder/generator-4",
+      "schema": "./folder/generator-4/schema.json"
+    },
     "generator-5": {
-      "description": "",
+      "title": "generator 5",
+      "description": "generator-5",
       "factory": "./generator-5",
       "schema": "./generator-5/schema.json",
       "hidden": true
     },
     "generator-6": {
-      "description": "",
+      "title": "generator 6",
+      "description": "generator-6",
       "factory": "./generator-6",
       "schema": "./generator-6/schema.json"
-    },
-    "generator-2": {
-      "description": "Description for generator 2",
-      "factory": "./folder/generator-2",
-      "schema": "./folder/generator-2/schema.json"
-    },
-    "generator-4": {
-      "description": "",
-      "factory": "./folder/generator-4",
-      "schema": "./folder/generator-4/schema.json"
-    },
-    "generator-1": {
-      "description": "Description for generator 1",
-      "factory": "./generator-1",
-      "schema": "./generator-1/schema.json"
     }
   }
 }

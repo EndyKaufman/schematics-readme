@@ -21,26 +21,10 @@ schematics fake-generator:<generator name> <arguments>
 ```
 
 # Available generators
-* [generator 6](#generator-6) - generator-6
 * [Generator 1](#generator-1) - Description for generator 1
 * [Generator 2](#generator-2) - Description for generator 2
 * [generator 4](#generator-4) - generator-4
-## generator 6
-
-
-Example:
-```bash
-schematics fake-generator:generator-6
-```
-
-### Parameters
-| Name | Type | Description | Default |
-|------|:----:|------------:|--------:|
-| with-default | {string} | With default. | "." |
-| with-named | *required* {string} | With named | none |
-
-
-
+* [generator 6](#generator-6) - generator-6
 ## Generator 1
 Description for generator 1
 
@@ -59,12 +43,13 @@ schematics fake-generator:generator-1 argv0 --with-default . --with-named name
 ### Dependencies
 | Name | Used | Current |
 | ------ | ------ | ------ |
-| [typescript](https://www.npmjs.com/package/key) | [![NPM version](https://img.shields.io/badge/npm_package-1.1.1-9cf.svg)](https://www.npmjs.com/package/key) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/key) |
+| [typescript](https://www.npmjs.com/package/typescript) | [![NPM version](https://img.shields.io/badge/npm_package-1.1.1-9cf.svg)](https://www.npmjs.com/package/typescript) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript) |
 
 ### Dev dependencies
 | Name | Used | Current |
 | ------ | ------ | ------ |
-| [tslint](https://www.npmjs.com/package/key) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/key) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/key) |
+| [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+| [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
 
 ## Generator 2
 Description for generator 2
@@ -83,12 +68,13 @@ schematics fake-generator:generator-2 --with-default . --with-named name
 ### Dependencies
 | Name | Used | Current |
 | ------ | ------ | ------ |
-| [typescript](https://www.npmjs.com/package/key) | [![NPM version](https://img.shields.io/badge/npm_package-3.3.3-9cf.svg)](https://www.npmjs.com/package/key) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/key) |
+| [typescript](https://www.npmjs.com/package/typescript) | [![NPM version](https://img.shields.io/badge/npm_package-3.3.3-9cf.svg)](https://www.npmjs.com/package/typescript) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript) |
 
 ### Dev dependencies
 | Name | Used | Current |
 | ------ | ------ | ------ |
-| [tslint](https://www.npmjs.com/package/key) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/key) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/key) |
+| [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
+| [jest](https://www.npmjs.com/package/jest) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/jest) | [![NPM version](https://badge.fury.io/js/jest.svg)](https://www.npmjs.com/package/jest) |
 
 ## generator 4
 
@@ -96,6 +82,22 @@ schematics fake-generator:generator-2 --with-default . --with-named name
 Example:
 ```bash
 schematics fake-generator:generator-4
+```
+
+### Parameters
+| Name | Type | Description | Default |
+|------|:----:|------------:|--------:|
+| with-default | {string} | With default. | "." |
+| with-named | *required* {string} | With named | none |
+
+
+
+## generator 6
+
+
+Example:
+```bash
+schematics fake-generator:generator-6
 ```
 
 ### Parameters

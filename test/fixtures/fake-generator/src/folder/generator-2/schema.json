@@ -7,11 +7,12 @@
     "examples": [
         "generator-2 --with-default . --with-named name"
     ],
-    "dependencies": {
+    "mainDependencies": {
         "typescript": "*"
     },
     "devDependencies": {
-        "tslint": "5.5.5"
+        "tslint": "5.5.5",
+        "jest": "^"
     },
     "properties": {
         "with-default": {

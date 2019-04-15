@@ -9,6 +9,7 @@ export interface ICollection {
     $schema: './node_modules/@angular-devkit/schematics/collection-schema.json';
     schematics: {
         [key: string]: {
+            title: string;
             description: string;
             factory: string;
             schema: string;
@@ -50,7 +51,7 @@ export interface IGenerator {
     title: string;
     description: string;
     examples: string[];
-    dependencies: {
+    mainDependencies: {
         [key: string]: string
     };
     devDependencies: {
@@ -63,22 +64,33 @@ export interface IGenerator {
 export function collectGenerator(rootPath: string, path: string): IGenerator {
     const generator: IGenerator = loadGenerator(rootPath, path);
     const rootPackage: IPackage = loadRootPackage(rootPath);
-    if (generator.dependencies) {
+    let prevVersion: string;
+    if (generator.mainDependencies) {
         if (rootPackage) {
-            Object.keys(generator.dependencies).forEach((depName: string) => {
+            prevVersion = '';
+            Object.keys(generator.mainDependencies).forEach((depName: string) => {
+                if (prevVersion && generator.mainDependencies[depName] === '^') {
+                    generator.mainDependencies[depName] = prevVersion;
+                }
+                prevVersion = generator.mainDependencies[depName];
                 const value = rootPackage.dependencies[depName];
-                if (generator.dependencies[depName] === '*' && value) {
+                if (generator.mainDependencies[depName] === '*' && value) {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                        generator.dependencies[depName] = value;
+                        generator.mainDependencies[depName] = value;
                     }
                     if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                        generator.dependencies[depName] = value;
+                        generator.mainDependencies[depName] = value;
                     }
                 }
             });
         }
-        Object.keys(generator.dependencies).forEach((depName: string) => {
-            const value = generator.dependencies[depName];
+        prevVersion = '';
+        Object.keys(generator.mainDependencies).forEach((depName: string) => {
+            if (prevVersion && generator.mainDependencies[depName] === '^') {
+                generator.mainDependencies[depName] = prevVersion;
+            }
+            prevVersion = generator.devDependencies[depName];
+            const value = generator.mainDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
             if (existsSync(depPath)) {
@@ -87,18 +99,24 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                         readFileSync(depPath).toString()
                     )
                 };
+                prevVersion = generator.mainDependencies[depName];
                 if (depPackage.dependencies && depPackage.dependencies[depName]) {
-                    generator.dependencies[depName] = depPackage.dependencies[depName];
+                    generator.mainDependencies[depName] = depPackage.dependencies[depName];
                 }
                 if (depPackage.devDependencies && depPackage.devDependencies[depName]) {
-                    generator.dependencies[depName] = depPackage.devDependencies[depName];
+                    generator.mainDependencies[depName] = depPackage.devDependencies[depName];
                 }
             }
         });
     }
     if (generator.devDependencies) {
         if (rootPackage) {
+            prevVersion = '';
             Object.keys(generator.devDependencies).forEach((depName: string) => {
+                if (prevVersion && generator.devDependencies[depName] === '^') {
+                    generator.devDependencies[depName] = prevVersion;
+                }
+                prevVersion = generator.devDependencies[depName];
                 const value = rootPackage.devDependencies[depName];
                 if (generator.devDependencies[depName] === '*' && value) {
                     if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
@@ -110,7 +128,12 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
                 }
             });
         }
+        prevVersion = '';
         Object.keys(generator.devDependencies).forEach((depName: string) => {
+            if (prevVersion && generator.devDependencies[depName] === '^') {
+                generator.devDependencies[depName] = prevVersion;
+            }
+            prevVersion = generator.devDependencies[depName];
             const value = generator.devDependencies[depName];
             const dir = dirname(path);
             const depPath = join(dir, value);
@@ -175,7 +198,10 @@ export function saveCollection(rootPath: string, collection: ICollection) {
 }
 export function loadGenerator(rootPath: string, path: string): IGenerator {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
-    const title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
+    let title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
+    if (schema.title && title.length > 0) {
+        title = title.charAt(0).toUpperCase() + title.substr(1);
+    }
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
     const localPath = resolve(path).replace(resolve(join(rootPath, 'src')), '');
     return {
@@ -197,6 +223,9 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
                 const generators: IGenerator[] =
                     files.map(file =>
                         collectGenerator(rootPath, file)
+                    ).sort(
+                        (a, b) =>
+                            !a ? 0 : a.name.localeCompare(b.name)
                     );
                 resolve(
                     generators
@@ -208,7 +237,7 @@ export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
 export function transformGeneratorToMarkdown(rootPackage: IPackage, generator: IGenerator): string {
     const exampleMarkdown = generateExamples();
     const parametrsMarkdown = generateParametrs();
-    const dependenciesMarkdown = generateDependencies('dependencies');
+    const dependenciesMarkdown = generateDependencies('mainDependencies');
     const devDependenciesMarkdown = generateDependencies('devDependencies');
     return `## ${generator.title}
 ${generator.description}
@@ -239,7 +268,7 @@ ${parametrs}`;
         }
         return parametrsMarkdown;
     }
-    function generateDependencies(dependenciesType: 'dependencies' | 'devDependencies') {
+    function generateDependencies(dependenciesType: 'mainDependencies' | 'devDependencies') {
         let title = 'Dependencies';
         if (dependenciesType === 'devDependencies') {
             title = 'Dev dependencies';
@@ -258,7 +287,7 @@ ${parametrs}`;
                 ).replace(
                     new RegExp('^', 'g'), ''
                 );
-                const npmUrl = `https://www.npmjs.com/package/key`;
+                const npmUrl = `https://www.npmjs.com/package/${key}`;
                 const currentVersionImage = `https://badge.fury.io/js/${encodeURI(key)}.svg`;
                 const usedVersionImage = `https://img.shields.io/badge/npm_package-${version}-9cf.svg`;
                 return `| [${key}](${npmUrl}) | [![NPM version](${usedVersionImage})](${npmUrl}) | [![NPM version](${currentVersionImage})](${npmUrl}) |`;
@@ -370,7 +399,8 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
         .forEach(
             generator => {
                 collections.schematics[generator.id] = {
-                    description: generator.description,
+                    title: generator.title || generator.id,
+                    description: generator.description || generator.id,
                     factory: `.${dirname(generator.localPath)}`,
                     schema: `.${generator.localPath}`,
                     ...(generator.hidden ? { hidden: true } : {})

@@ -8,7 +8,7 @@
         "generator-3 --with-default . --with-named name"
     ],
     "hidden": true,
-    "dependencies": {
+    "mainDependencies": {
         "typescript": "*"
     },
     "devDependencies": {
