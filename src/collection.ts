@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { dirname, join, resolve } from 'path';
+import { basename, dirname, join, resolve } from 'path';
 import * as recursive from 'recursive-readdir';
 
 export const START_GENERATORS = '<!-- generators -->';
@@ -59,17 +59,19 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
     const generator: IGenerator = loadGenerator(rootPath, path);
     const rootPackage: IPackage = loadRootPackage(rootPath);
     if (generator.dependencies) {
-        Object.keys(generator.dependencies).forEach((depName: string) => {
-            const value = rootPackage.dependencies[depName];
-            if (generator.dependencies[depName] === '*' && value) {
-                if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                    generator.dependencies[depName] = value;
+        if (rootPackage) {
+            Object.keys(generator.dependencies).forEach((depName: string) => {
+                const value = rootPackage.dependencies[depName];
+                if (generator.dependencies[depName] === '*' && value) {
+                    if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
+                        generator.dependencies[depName] = value;
+                    }
+                    if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
+                        generator.dependencies[depName] = value;
+                    }
                 }
-                if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                    generator.dependencies[depName] = value;
-                }
-            }
-        });
+            });
+        }
         Object.keys(generator.dependencies).forEach((depName: string) => {
             const value = generator.dependencies[depName];
             const dir = dirname(path);
@@ -90,17 +92,19 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
         });
     }
     if (generator.devDependencies) {
-        Object.keys(generator.devDependencies).forEach((depName: string) => {
-            const value = rootPackage.devDependencies[depName];
-            if (generator.devDependencies[depName] === '*' && value) {
-                if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
-                    generator.devDependencies[depName] = value;
+        if (rootPackage) {
+            Object.keys(generator.devDependencies).forEach((depName: string) => {
+                const value = rootPackage.devDependencies[depName];
+                if (generator.devDependencies[depName] === '*' && value) {
+                    if (rootPackage.dependencies && rootPackage.dependencies[depName]) {
+                        generator.devDependencies[depName] = value;
+                    }
+                    if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
+                        generator.devDependencies[depName] = value;
+                    }
                 }
-                if (rootPackage.devDependencies && rootPackage.devDependencies[depName]) {
-                    generator.devDependencies[depName] = value;
-                }
-            }
-        });
+            });
+        }
         Object.keys(generator.devDependencies).forEach((depName: string) => {
             const value = generator.devDependencies[depName];
             const dir = dirname(path);
@@ -123,10 +127,37 @@ export function collectGenerator(rootPath: string, path: string): IGenerator {
     return generator;
 }
 export function loadRootPackage(rootPath: string): IPackage {
-    return JSON.parse(readFileSync(join(rootPath, 'package.json')).toString());
+    try {
+        const packageData: IPackage = JSON.parse(readFileSync(join(rootPath, 'package.json')).toString());
+        if (!packageData.name) {
+            packageData.name = basename(rootPath);
+        }
+        return packageData;
+    } catch (error) {
+        return {
+            name: basename(rootPath),
+            dependencies: {},
+            devDependencies: {}
+        };
+    }
 }
-export function loadRootReadme(rootPath: string): string {
-    return readFileSync(join(rootPath, 'README.md')).toString();
+export function loadRootReadme(rootPackage: IPackage, rootPath: string): string {
+    try {
+        return readFileSync(join(rootPath, 'README.md')).toString();
+    } catch (error) {
+        return `${rootPackage.name}
+===============
+
+Descriptions for ${rootPackage.name}
+
+<!-- generators -->
+<!-- generatorsstop -->
+
+# License
+
+MIT
+`;
+    }
 }
 export function saveRootReadme(rootPath: string, content: string) {
     writeFileSync(join(rootPath, 'README.md'), content);
@@ -281,7 +312,7 @@ ${generatorsMarkdown}`;
 }
 export async function transformGeneratorsToMarkdown(rootPath: string): Promise<IGenerator[]> {
     const rootPackage: IPackage = loadRootPackage(rootPath);
-    const rootReadme: string = loadRootReadme(rootPath);
+    const rootReadme: string = loadRootReadme(rootPackage, rootPath);
     let generators: IGenerator[] = [];
     try {
         generators = await collectGenerators(rootPath);
