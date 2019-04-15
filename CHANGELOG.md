@@ -1,3 +1,20 @@
+# [0.2.0](https://github.com/EndyKaufman/schematics-readme/compare/0.1.0...0.2.0) (2019-04-15)
+
+
+### Bug Fixes
+
+* Change schema property for get main dependencies, from dependencies to mainDependencies? for fix ajv schema validation errors ([23e090c](https://github.com/EndyKaufman/schematics-readme/commit/23e090c))
+* Change sort, use generator id for it ([81cebfb](https://github.com/EndyKaufman/schematics-readme/commit/81cebfb))
+* Upper case first letter for title ([e782e3d](https://github.com/EndyKaufman/schematics-readme/commit/e782e3d))
+
+
+### Features
+
+* Add sort founded schema files ([e7cf8d9](https://github.com/EndyKaufman/schematics-readme/commit/e7cf8d9))
+* Add support use prev value of dependency if current equals to "^" ([2ec6d7e](https://github.com/EndyKaufman/schematics-readme/commit/2ec6d7e))
+
+
+
 # [0.1.0](https://github.com/EndyKaufman/schematics-readme/compare/0.0.5...0.1.0) (2019-04-15)
 
 
