@@ -44,12 +44,14 @@ schematics fake-generator:generator-1 argv0 --with-default . --with-named name
 | Name | Used | Current |
 | ------ | ------ | ------ |
 | [typescript](https://www.npmjs.com/package/typescript) | [![NPM version](https://img.shields.io/badge/npm_package-1.1.1-9cf.svg)](https://www.npmjs.com/package/typescript) | [![NPM version](https://badge.fury.io/js/typescript.svg)](https://www.npmjs.com/package/typescript) |
+| [@angular/core](https://www.npmjs.com/package/@angular/core) | [![NPM version](https://img.shields.io/badge/npm_package-3.0.0-9cf.svg)](https://www.npmjs.com/package/@angular/core) | [![NPM version](https://badge.fury.io/js/%40angular%2Fcore.svg)](https://www.npmjs.com/package/@angular/core) |
 
 ### Dev dependencies
 | Name | Used | Current |
 | ------ | ------ | ------ |
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-2.2.2-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
 | [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
+| [@angular/cli](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://img.shields.io/badge/npm_package-3.0.0-9cf.svg)](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://badge.fury.io/js/%40angular%2Fcli.svg)](https://www.npmjs.com/package/@angular/cli) |
 
 ## Generator 2
 Description for generator 2
