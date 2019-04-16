@@ -23,8 +23,8 @@ schematics fake-generator:<generator name> <arguments>
 # Available generators
 * [Generator 1](#generator-1) - Description for generator 1
 * [Generator 2](#generator-2) - Description for generator 2
-* [generator 4](#generator-4) - generator-4
-* [generator 6](#generator-6) - generator-6
+* [Generator 4](#generator-4) - generator-4
+* [Generator 6](#generator-6) - generator-6
 ## Generator 1
 Description for generator 1
 
@@ -78,7 +78,7 @@ schematics fake-generator:generator-2 --with-default . --with-named name
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
 | [jest](https://www.npmjs.com/package/jest) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/jest) | [![NPM version](https://badge.fury.io/js/jest.svg)](https://www.npmjs.com/package/jest) |
 
-## generator 4
+## Generator 4
 
 
 Example:
@@ -94,7 +94,7 @@ schematics fake-generator:generator-4
 
 
 
-## generator 6
+## Generator 6
 
 
 Example:
