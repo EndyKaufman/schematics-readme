@@ -9,7 +9,9 @@
     ],
     "mainDependencies": {
         "typescript": "./files/package.json",
-        "@angular/core": "^"
+        "@angular/core": "^",
+        "react": "^",
+        "vue": "^"
     },
     "devDependencies": {
         "tslint": "./files/package.json",

@@ -12,7 +12,7 @@ schematics-readme
 
 Generator `README.md` file for [Angular Schematics](https://angular.io/guide/schematics-for-libraries) collection
 
-# Installation
+# Install
 
 ```bash
 npm i -g schematics-readme
@@ -20,7 +20,7 @@ npm i -g schematics-readme
 
 ## Links
 
-[Fake generator](https://github.com/EndyKaufman/schematics-readme/blob/master/test/fixtures/fake-generator/README.md) - Fake generator for test.
+[Fake generators](https://github.com/EndyKaufman/schematics-readme/blob/master/test/fixtures/fake-generators/README.md) - Fake generators for test.
 
 # Usage
 Open folder with schematic workspace and run

@@ -17,7 +17,14 @@ export interface ICollection {
     };
 }
 export interface IPackage {
+    path: string;
+    localPath: string;
+    gitPath?: string;
     name: string;
+    repository?: {
+        type: 'git';
+        url: string;
+    };
     dependencies: {
         [key: string]: string
     };
@@ -26,17 +33,15 @@ export interface IPackage {
     };
 }
 export interface IGeneratorProperty {
-    [key: string]: {
-        description: string
-        type: string;
-        $default?: {
-            $source: 'argv',
-            index: number
-        },
-        default?: string;
-        ['x-prompt']: string;
-        hidden: boolean;
+    description: string;
+    type: string;
+    $default?: {
+        $source: 'argv';
+        index: number;
     };
+    default?: string;
+    ['x-prompt']: string;
+    hidden: boolean;
 }
 export interface IGeneratorProperties {
     [key: string]: IGeneratorProperty;
@@ -45,6 +50,7 @@ export interface IGenerator {
     $schema: 'http://json-schema.org/schema';
     path: string;
     localPath: string;
+    gitPath?: string;
     id: string;
     name: string;
     type: 'object';
@@ -61,9 +67,8 @@ export interface IGenerator {
     required: string[];
     hidden: boolean;
 }
-export function collectGenerator(rootPath: string, path: string): IGenerator {
-    const generator: IGenerator = loadGenerator(rootPath, path);
-    const rootPackage: IPackage = loadRootPackage(rootPath);
+export function collectGenerator(rootPackage: IPackage, path: string): IGenerator {
+    const generator: IGenerator = loadGenerator(rootPackage, path);
     let prevVersion: string;
     if (generator.mainDependencies) {
         if (rootPackage) {
@@ -157,18 +162,37 @@ export function loadRootPackage(rootPath: string): IPackage {
         if (!packageData.name) {
             packageData.name = basename(rootPath);
         }
-        return packageData;
+        return {
+            path: rootPath,
+            localPath: '/',
+            gitPath: getRepository(packageData),
+            ...packageData
+        };
     } catch (error) {
         return {
             name: basename(rootPath),
+            path: rootPath,
+            gitPath: undefined,
+            localPath: '/',
             dependencies: {},
             devDependencies: {}
         };
     }
+    function getRepository(packageData: IPackage) {
+        if (
+            packageData && packageData.repository && packageData.repository.type === 'git'
+        ) {
+            const url = packageData.repository.url;
+            if (url.substr(0, 4) === 'git+' && url.substr(url.length - 4, 4) === '.git') {
+                return url.substring(4, url.length - 4);
+            }
+        }
+        return undefined;
+    }
 }
-export function loadRootReadme(rootPackage: IPackage, rootPath: string): string {
+export function loadRootReadme(rootPackage: IPackage): string {
     try {
-        return readFileSync(join(rootPath, 'README.md')).toString();
+        return readFileSync(join(rootPackage.path, 'README.md')).toString();
     } catch (error) {
         return `${rootPackage.name}
 ===============
@@ -193,33 +217,35 @@ export function saveCollection(rootPath: string, collection: ICollection) {
         `${JSON.stringify(collection, null, 2)}\n`
     );
 }
-export function loadGenerator(rootPath: string, path: string): IGenerator {
+export function loadGenerator(rootPackage: IPackage, path: string): IGenerator {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
     let title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
-    if (schema.title && title.length > 0) {
+    if (!schema.title && title.length > 0) {
         title = title.charAt(0).toUpperCase() + title.substr(1);
     }
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
-    const localPath = resolve(path).replace(resolve(join(rootPath, 'src')), '');
+    const localPath = resolve(path).replace(resolve(join(rootPackage.path, 'src')), '');
+
     return {
         name,
         path,
         localPath,
+        gitPath: `${rootPackage.gitPath || ''}/src${localPath || ''}`,
         ...schema,
         title: title,
         description: (schema.description || '')
     };
 }
 
-export function collectGenerators(rootPath: string): Promise<IGenerator[]> {
+export function collectGenerators(rootPackage: IPackage): Promise<IGenerator[]> {
     return new Promise((resolve, reject) =>
-        recursive(join(rootPath, 'src'), ['!*schema.json'], (err, files) => {
+        recursive(join(rootPackage.path, 'src'), ['!*schema.json'], (err, files) => {
             if (err || !Array.isArray(files)) {
                 reject(err);
             } else {
                 const generators: IGenerator[] =
                     files.map(file =>
-                        collectGenerator(rootPath, file)
+                        collectGenerator(rootPackage, file)
                     ).sort(
                         (a, b) =>
                             !a ? 0 : a.name.localeCompare(b.name)
@@ -236,12 +262,24 @@ export function transformGeneratorToMarkdown(rootPackage: IPackage, generator: I
     const parametrsMarkdown = generateParametrs();
     const dependenciesMarkdown = generateDependencies('mainDependencies');
     const devDependenciesMarkdown = generateDependencies('devDependencies');
+    const seeCode = (existsSync(generator.path.replace('schema.json', 'index.ts')) && generator.localPath && generator.gitPath) ? `
+_See code: [src${
+        generator.localPath.split('\\').join('/').replace('schema.json', 'index.ts')
+        }](${
+        generator.gitPath.split('\\').join('/').replace('schema.json', 'index.ts')
+        })_` : '';
     return `## ${generator.title}
-${generator.description}
-${exampleMarkdown}
-${parametrsMarkdown}
-${dependenciesMarkdown}
-${devDependenciesMarkdown}`;
+${
+        [generator.description,
+            exampleMarkdown,
+            parametrsMarkdown,
+            dependenciesMarkdown,
+            devDependenciesMarkdown,
+            seeCode
+        ]
+            .filter(text => Boolean(text))
+            .join('\n')
+        }`;
 
     function generateParametrs() {
         let parametrsMarkdown = '';
@@ -312,10 +350,44 @@ ${title}:
 ${examples}
 \`\`\``;
         } else {
+            const argv_values: string[] = [];
+            const named_values: string[] = [];
+            Object.keys(generator.properties)
+                .filter(key => {
+                    const property: IGeneratorProperty = generator.properties[key];
+                    if (
+                        property &&
+                        !property.hidden &&
+                        property.$default !== undefined
+                    ) {
+                        return property.$default.$source === 'argv';
+                    }
+                })
+                .forEach(key => {
+                    const value = `argvvalue${argv_values.length + 1}`;
+                    argv_values.push(
+                        `${value}`
+                    );
+                });
+            Object.keys(generator.properties)
+                .filter(propertyKey => !generator.properties[propertyKey].hidden &&
+                    generator.properties[propertyKey].$default === undefined &&
+                    generator.properties[propertyKey].default === undefined)
+                .forEach(key => {
+                    const value = `namedvalue${named_values.length + 1}`;
+                    named_values.push(
+                        `--${key} ${value}`
+                    );
+                });
+            const args = [
+                generator.id,
+                ...argv_values,
+                ...named_values
+            ];
             exampleMarkdown = `
 Example:
 \`\`\`bash
-schematics ${rootPackage.name}:${generator.id}
+schematics ${rootPackage.name}:${args.join(' ')}
 \`\`\``;
         }
         return exampleMarkdown;
@@ -331,7 +403,7 @@ export function createHeader(rootPackage: IPackage, generators: IGenerator[]) {
 * [Usage](#usage)
 * [Available generators](#available-generators)
 
-# Installation
+# Install
 \`\`\`bash
 npm install -g @angular-devkit/schematics-cli
 npm install --save-dev ${rootPackage.name}
@@ -347,10 +419,10 @@ ${generatorsMarkdown}`;
 }
 export async function transformGeneratorsToMarkdown(rootPath: string): Promise<IGenerator[]> {
     const rootPackage: IPackage = loadRootPackage(rootPath);
-    const rootReadme: string = loadRootReadme(rootPackage, rootPath);
+    const rootReadme: string = loadRootReadme(rootPackage);
     let generators: IGenerator[] = [];
     try {
-        generators = (await collectGenerators(rootPath))
+        generators = (await collectGenerators(rootPackage))
             .filter(generator => !generator.hidden);
     } catch (error) {
         console.error(error);
@@ -382,9 +454,10 @@ export async function transformGeneratorsToMarkdown(rootPath: string): Promise<I
     return generators;
 }
 export async function transformGeneratorsToCollections(rootPath: string): Promise<any> {
+    const rootPackage: IPackage = loadRootPackage(rootPath);
     let generators: IGenerator[] = [];
     try {
-        generators = await collectGenerators(rootPath);
+        generators = await collectGenerators(rootPackage);
     } catch (error) {
         console.error(error);
     }
@@ -404,6 +477,6 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
                 };
             }
         );
-    saveCollection(rootPath, collections);
+    saveCollection(rootPackage.path, collections);
     return collections;
 }

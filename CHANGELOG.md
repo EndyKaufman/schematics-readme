@@ -1,3 +1,20 @@
+# [1.0.0](https://github.com/EndyKaufman/schematics-readme/compare/0.2.1...1.0.0) (2019-04-17)
+
+
+### Bug Fixes
+
+* First letter to uppercse in title for generator ([e4980c7](https://github.com/EndyKaufman/schematics-readme/commit/e4980c7))
+* Formated output README.md file and sources ([b76f815](https://github.com/EndyKaufman/schematics-readme/commit/b76f815))
+* Update logic for link to source file ([7058ac0](https://github.com/EndyKaufman/schematics-readme/commit/7058ac0))
+
+
+### Features
+
+* Add generate example if it not set in schema.json ([0bd655f](https://github.com/EndyKaufman/schematics-readme/commit/0bd655f))
+* Add link to source of generators ([666143a](https://github.com/EndyKaufman/schematics-readme/commit/666143a))
+
+
+
 ## [0.2.1](https://github.com/EndyKaufman/schematics-readme/compare/0.2.0...0.2.1) (2019-04-15)
 
 
