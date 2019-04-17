@@ -55,7 +55,7 @@ schematics fake-generators:generator-1 argv0 --with-default . --with-named name
 | [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
 | [@angular/cli](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://img.shields.io/badge/npm_package-./files/package.json-9cf.svg)](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://badge.fury.io/js/%40angular%2Fcli.svg)](https://www.npmjs.com/package/@angular/cli) |
 
-_See code: [src/generator-1/index.ts](https://github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generators/src/generator-1/index.ts)_
+_See code: [src/generator-1/index.ts](https://github.com/EndyKaufman/schematics-readme/blob/master/test/fixtures/fake-generators/src/generator-1/index.ts)_
 
 ## Generator 2
 Description for generator 2
@@ -109,7 +109,7 @@ schematics fake-generators:generator-6 argvvalue1 --with-named namedvalue1
 | with-default | {string} | With default. | "." |
 | with-named | *required* {string} | With named | none |
 
-_See code: [src/generator-6/index.ts](https://github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generators/src/generator-6/index.ts)_
+_See code: [src/generator-6/index.ts](https://github.com/EndyKaufman/schematics-readme/blob/master/test/fixtures/fake-generators/src/generator-6/index.ts)_
 
 <!-- generatorsstop -->
 
