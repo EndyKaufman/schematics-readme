@@ -232,7 +232,7 @@ export function loadGenerator(rootPackage: IPackage, path: string): IGenerator {
         name,
         path,
         localPath,
-        gitPath: join(rootPackage.gitPath || '', 'src', localPath || ''),
+        gitPath: `${rootPackage.gitPath || ''}/src${localPath || ''}`,
         ...schema,
         title: title,
         description: (schema.description || '')
@@ -266,10 +266,10 @@ export function transformGeneratorToMarkdown(rootPackage: IPackage, generator: I
     const devDependenciesMarkdown = generateDependencies('devDependencies');
     const seeCode = (generator.localPath && generator.gitPath) ? `
 _See code: [src${
-        dirname(generator.localPath).replace(new RegExp('\\\\', 'g'), '/')
-        }/index.ts](${
-        dirname(generator.gitPath).replace(new RegExp('\\\\', 'g'), '/')
-        }/index.ts)_` : '';
+        generator.localPath.split('\\').join('/').replace('schema.json', 'index.ts')
+        }](${
+        generator.gitPath.split('\\').join('/').replace('schema.json', 'index.ts')
+        })_` : '';
     return `## ${generator.title}
 ${generator.description}
 ${exampleMarkdown}
