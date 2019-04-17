@@ -262,19 +262,24 @@ export function transformGeneratorToMarkdown(rootPackage: IPackage, generator: I
     const parametrsMarkdown = generateParametrs();
     const dependenciesMarkdown = generateDependencies('mainDependencies');
     const devDependenciesMarkdown = generateDependencies('devDependencies');
-    const seeCode = (generator.localPath && generator.gitPath) ? `
+    const seeCode = (existsSync(generator.path.replace('schema.json', 'index.ts')) && generator.localPath && generator.gitPath) ? `
 _See code: [src${
         generator.localPath.split('\\').join('/').replace('schema.json', 'index.ts')
         }](${
         generator.gitPath.split('\\').join('/').replace('schema.json', 'index.ts')
         })_` : '';
     return `## ${generator.title}
-${generator.description}
-${exampleMarkdown}
-${parametrsMarkdown}
-${dependenciesMarkdown}
-${devDependenciesMarkdown}
-${seeCode}`;
+${
+        [generator.description,
+            exampleMarkdown,
+            parametrsMarkdown,
+            dependenciesMarkdown,
+            devDependenciesMarkdown,
+            seeCode
+        ]
+            .filter(text => Boolean(text))
+            .join('\n')
+        }`;
 
     function generateParametrs() {
         let parametrsMarkdown = '';
@@ -345,7 +350,7 @@ ${title}:
 ${examples}
 \`\`\``;
         } else {
-            const args_values: string[] = [];
+            const argv_values: string[] = [];
             const named_values: string[] = [];
             Object.keys(generator.properties)
                 .filter(key => {
@@ -359,8 +364,8 @@ ${examples}
                     }
                 })
                 .forEach(key => {
-                    const value = `argsvalue${args_values.length + 1}`;
-                    args_values.push(
+                    const value = `argvvalue${argv_values.length + 1}`;
+                    argv_values.push(
                         `${value}`
                     );
                 });
@@ -376,7 +381,7 @@ ${examples}
                 });
             const args = [
                 generator.id,
-                ...args_values,
+                ...argv_values,
                 ...named_values
             ];
             exampleMarkdown = `
@@ -398,7 +403,7 @@ export function createHeader(rootPackage: IPackage, generators: IGenerator[]) {
 * [Usage](#usage)
 * [Available generators](#available-generators)
 
-# Installation
+# Install
 \`\`\`bash
 npm install -g @angular-devkit/schematics-cli
 npm install --save-dev ${rootPackage.name}

@@ -1,7 +1,7 @@
 fake-generators
 ===============
 
-Fake generator for test
+Fake generators for test
 
 <!-- generators -->
 <!-- generatorsstop -->
