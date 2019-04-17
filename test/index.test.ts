@@ -7,11 +7,11 @@ describe('schematics-readme', () => {
   beforeEach(done => {
     writeFileSync(
       'test/fixtures/fake-generators/src/collection.json',
-      readFileSync('test/fixtures/fake-generator_sources/src/collection.json').toString()
+      readFileSync('test/fixtures/fake-generators_sources/src/collection.json').toString()
     );
     writeFileSync(
       'test/fixtures/fake-generators/README.md',
-      readFileSync('test/fixtures/fake-generator_sources/README.md').toString()
+      readFileSync('test/fixtures/fake-generators_sources/README.md').toString()
     );
     done();
   });
