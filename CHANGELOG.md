@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/EndyKaufman/schematics-readme/compare/1.0.0...1.0.1) (2019-04-17)
+
+
+### Bug Fixes
+
+* Add support detect remote repository url from .git config ([7609a1c](https://github.com/EndyKaufman/schematics-readme/commit/7609a1c))
+
+
+
 # [1.0.0](https://github.com/EndyKaufman/schematics-readme/compare/0.2.1...1.0.0) (2019-04-17)
 
 

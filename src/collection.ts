@@ -1,9 +1,14 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import * as gitconfig from 'gitconfiglocal';
 import { basename, dirname, join, resolve } from 'path';
 import * as recursive from 'recursive-readdir';
-
+import { promisify } from 'util';
+import normalizePackageData = require('normalize-package-data');
+const getPkgRepo = require('get-pkg-repo');
+const url = require('url');
 export const START_GENERATORS = '<!-- generators -->';
 export const STOP_GENERATORS = '<!-- generatorsstop -->';
+
 
 export interface ICollection {
     $schema: './node_modules/@angular-devkit/schematics/collection-schema.json';
@@ -24,12 +29,19 @@ export interface IPackage {
     repository?: {
         type: 'git';
         url: string;
-    };
+    } | string;
     dependencies: {
         [key: string]: string
     };
     devDependencies: {
         [key: string]: string
+    };
+    parsedRepositoryData?: {
+        host: string;
+        owner: string;
+        repository: string;
+        repoUrl: string;
+        branch: string;
     };
 }
 export interface IGeneratorProperty {
@@ -67,8 +79,8 @@ export interface IGenerator {
     required: string[];
     hidden: boolean;
 }
-export function collectGenerator(rootPackage: IPackage, path: string): IGenerator {
-    const generator: IGenerator = loadGenerator(rootPackage, path);
+export async function collectGenerator(rootPackage: IPackage, path: string): Promise<IGenerator> {
+    const generator: IGenerator = await loadGenerator(rootPackage, path);
     let prevVersion: string;
     if (generator.mainDependencies) {
         if (rootPackage) {
@@ -156,16 +168,18 @@ export function collectGenerator(rootPackage: IPackage, path: string): IGenerato
     }
     return generator;
 }
-export function loadRootPackage(rootPath: string): IPackage {
+export async function loadRootPackage(rootPath: string): Promise<IPackage> {
     try {
-        const packageData: IPackage = JSON.parse(readFileSync(join(rootPath, 'package.json')).toString());
+        const packageData: IPackage = await normalizePackage(
+            JSON.parse(readFileSync(join(rootPath, 'package.json')).toString())
+        );
         if (!packageData.name) {
             packageData.name = basename(rootPath);
         }
         return {
-            path: rootPath,
-            localPath: '/',
-            gitPath: getRepository(packageData),
+            path: existsSync(join(process.cwd(), rootPath)) ? join(process.cwd(), rootPath) : rootPath,
+            localPath: rootPath,
+            gitPath: packageData.parsedRepositoryData && packageData.parsedRepositoryData.repository,
             ...packageData
         };
     } catch (error) {
@@ -173,21 +187,10 @@ export function loadRootPackage(rootPath: string): IPackage {
             name: basename(rootPath),
             path: rootPath,
             gitPath: undefined,
-            localPath: '/',
+            localPath: rootPath,
             dependencies: {},
             devDependencies: {}
         };
-    }
-    function getRepository(packageData: IPackage) {
-        if (
-            packageData && packageData.repository && packageData.repository.type === 'git'
-        ) {
-            const url = packageData.repository.url;
-            if (url.substr(0, 4) === 'git+' && url.substr(url.length - 4, 4) === '.git') {
-                return url.substring(4, url.length - 4);
-            }
-        }
-        return undefined;
     }
 }
 export function loadRootReadme(rootPackage: IPackage): string {
@@ -217,20 +220,21 @@ export function saveCollection(rootPath: string, collection: ICollection) {
         `${JSON.stringify(collection, null, 2)}\n`
     );
 }
-export function loadGenerator(rootPackage: IPackage, path: string): IGenerator {
+export async function loadGenerator(rootPackage: IPackage, path: string): Promise<IGenerator> {
     const schema: IGenerator = JSON.parse(readFileSync(path).toString());
     let title = (schema.title || schema.id || '').replace(new RegExp('-', 'g'), ' ');
     if (!schema.title && title.length > 0) {
         title = title.charAt(0).toUpperCase() + title.substr(1);
     }
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
-    const localPath = resolve(path).replace(resolve(join(rootPackage.path, 'src')), '');
-
+    const gitFolder = await findGitFolder(path);
+    const localPath = resolve(path).replace(resolve(join(gitFolder || rootPackage.path, rootPackage.localPath, 'src')), '');
+    const branch = rootPackage.parsedRepositoryData && rootPackage.parsedRepositoryData.branch;
     return {
         name,
         path,
         localPath,
-        gitPath: `${rootPackage.gitPath || ''}/src${localPath || ''}`,
+        gitPath: `${rootPackage.gitPath || ''}/${join('blob', branch || '', rootPackage.localPath, 'src', localPath || '')}`,
         ...schema,
         title: title,
         description: (schema.description || '')
@@ -239,17 +243,20 @@ export function loadGenerator(rootPackage: IPackage, path: string): IGenerator {
 
 export function collectGenerators(rootPackage: IPackage): Promise<IGenerator[]> {
     return new Promise((resolve, reject) =>
-        recursive(join(rootPackage.path, 'src'), ['!*schema.json'], (err, files) => {
+        recursive(join(rootPackage.path, 'src'), ['!*schema.json'], async (err, files) => {
             if (err || !Array.isArray(files)) {
                 reject(err);
             } else {
-                const generators: IGenerator[] =
-                    files.map(file =>
-                        collectGenerator(rootPackage, file)
-                    ).sort(
-                        (a, b) =>
-                            !a ? 0 : a.name.localeCompare(b.name)
-                    );
+                const generators: IGenerator[] = (
+                    await Promise.all(
+                        files.map(file =>
+                            collectGenerator(rootPackage, file)
+                        )
+                    )
+                ).sort(
+                    (a, b) =>
+                        !a ? 0 : a.name.localeCompare(b.name)
+                );
                 resolve(
                     generators
                 );
@@ -418,7 +425,7 @@ schematics ${rootPackage.name}:<generator name> <arguments>
 ${generatorsMarkdown}`;
 }
 export async function transformGeneratorsToMarkdown(rootPath: string): Promise<IGenerator[]> {
-    const rootPackage: IPackage = loadRootPackage(rootPath);
+    const rootPackage: IPackage = await loadRootPackage(rootPath);
     const rootReadme: string = loadRootReadme(rootPackage);
     let generators: IGenerator[] = [];
     try {
@@ -454,7 +461,7 @@ export async function transformGeneratorsToMarkdown(rootPath: string): Promise<I
     return generators;
 }
 export async function transformGeneratorsToCollections(rootPath: string): Promise<any> {
-    const rootPackage: IPackage = loadRootPackage(rootPath);
+    const rootPackage: IPackage = await loadRootPackage(rootPath);
     let generators: IGenerator[] = [];
     try {
         generators = await collectGenerators(rootPackage);
@@ -479,4 +486,77 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
         );
     saveCollection(rootPackage.path, collections);
     return collections;
+}
+export async function normalizePackage(rootPackage: IPackage) {
+    let gitRemoteOriginUrlValue = '';
+    let gitConfig: { url: string, branch: string } = { url: '', branch: '' };
+    if (
+        !rootPackage.repository ||
+        (typeof rootPackage.repository !== 'string' && !rootPackage.repository.url)
+    ) {
+        try {
+            gitConfig = await getGitconfig(rootPackage.path);
+            gitRemoteOriginUrlValue = gitConfig.url;
+        } catch (err) {
+            gitRemoteOriginUrlValue = '';
+        }
+    }
+    if (gitRemoteOriginUrlValue !== '') {
+        rootPackage.repository = {
+            type: 'git',
+            url: gitRemoteOriginUrlValue
+        };
+        normalizePackageData(rootPackage);
+    }
+    let repo;
+    try {
+        repo = getPkgRepo(rootPackage);
+    } catch (err) {
+        repo = {};
+    }
+    if (repo.browse) {
+        const browse = repo.browse();
+        const parsedBrowse = url.parse(browse);
+        rootPackage.parsedRepositoryData = {
+            host: (repo.domain ? (parsedBrowse.protocol + (parsedBrowse.slashes ? '//' : '') + repo.domain) : null) || '',
+            owner: repo.user || '',
+            repoUrl: repo.project,
+            repository: browse,
+            branch: gitConfig.branch || 'master'
+        };
+    }
+    return rootPackage;
+}
+export async function getGitconfig(cwd = process.cwd()) {
+    const pGitconfig = promisify<any>(
+        (dir: string, cb: any) =>
+            gitconfig(dir, {}, cb)
+    );
+    const config: any = await pGitconfig(cwd);
+    const url = config && config.remote.origin && config.remote.origin.url;
+    const branch = config && config.branch && Object.keys(config.branch)[0] || 'master';
+
+    if (!url) {
+        throw new Error('Couldn\'t find origin url');
+    }
+
+    return {
+        url,
+        branch
+    };
+}
+export async function findGitFolder(dir: string): Promise<string | undefined> {
+    const folder = resolve(dir, process.env.GIT_DIR || '.git', 'config');
+    const exists = existsSync(folder);
+    if (exists) {
+        return await dir;
+    }
+    if (dir === resolve(dir, '..')) {
+        return await undefined;
+    }
+    try {
+        return await findGitFolder(resolve(dir, '..'));
+    } catch (error) {
+        return await undefined;
+    }
 }
