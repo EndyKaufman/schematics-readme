@@ -53,6 +53,8 @@ schematics fake-generator:generator-1 argv0 --with-default . --with-named name
 | [eslint](https://www.npmjs.com/package/eslint) | [![NPM version](https://img.shields.io/badge/npm_package-9.9.9-9cf.svg)](https://www.npmjs.com/package/eslint) | [![NPM version](https://badge.fury.io/js/eslint.svg)](https://www.npmjs.com/package/eslint) |
 | [@angular/cli](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://img.shields.io/badge/npm_package-3.0.0-9cf.svg)](https://www.npmjs.com/package/@angular/cli) | [![NPM version](https://badge.fury.io/js/%40angular%2Fcli.svg)](https://www.npmjs.com/package/@angular/cli) |
 
+_See code: [src/generator-1/index.ts](https:/github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generator/src/generator-1/index.ts)_
+
 ## Generator 2
 Description for generator 2
 
@@ -78,6 +80,8 @@ schematics fake-generator:generator-2 --with-default . --with-named name
 | [tslint](https://www.npmjs.com/package/tslint) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/tslint) | [![NPM version](https://badge.fury.io/js/tslint.svg)](https://www.npmjs.com/package/tslint) |
 | [jest](https://www.npmjs.com/package/jest) | [![NPM version](https://img.shields.io/badge/npm_package-5.5.5-9cf.svg)](https://www.npmjs.com/package/jest) | [![NPM version](https://badge.fury.io/js/jest.svg)](https://www.npmjs.com/package/jest) |
 
+_See code: [src/folder/generator-2/index.ts](https:/github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generator/src/folder/generator-2/index.ts)_
+
 ## Generator 4
 
 
@@ -94,6 +98,8 @@ schematics fake-generator:generator-4
 
 
 
+_See code: [src/folder/generator-4/index.ts](https:/github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generator/src/folder/generator-4/index.ts)_
+
 ## Generator 6
 
 
@@ -109,6 +115,8 @@ schematics fake-generator:generator-6
 | with-named | *required* {string} | With named | none |
 
 
+
+_See code: [src/generator-6/index.ts](https:/github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generator/src/generator-6/index.ts)_
 
 <!-- generatorsstop -->
 

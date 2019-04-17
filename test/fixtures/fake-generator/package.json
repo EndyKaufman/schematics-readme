@@ -1,6 +1,10 @@
 {
   "name": "fake-generator",
   "description": "Fake generator for test",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EndyKaufman/schematics-readme/tree/develop/test/fixtures/fake-generator.git"
+  },
   "dependencies": {
     "typescript": "3.3.3"
   },
