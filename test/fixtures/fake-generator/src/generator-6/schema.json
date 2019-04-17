@@ -3,6 +3,15 @@
     "id": "generator-6",
     "type": "object",
     "properties": {
+        "with-default-argv": {
+            "description": "With default argv.",
+            "type": "string",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "Please set argv0"
+        },
         "with-default": {
             "type": "string",
             "description": "With default.",

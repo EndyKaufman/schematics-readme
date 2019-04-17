@@ -33,17 +33,15 @@ export interface IPackage {
     };
 }
 export interface IGeneratorProperty {
-    [key: string]: {
-        description: string
-        type: string;
-        $default?: {
-            $source: 'argv',
-            index: number
-        },
-        default?: string;
-        ['x-prompt']: string;
-        hidden: boolean;
+    description: string;
+    type: string;
+    $default?: {
+        $source: 'argv';
+        index: number;
     };
+    default?: string;
+    ['x-prompt']: string;
+    hidden: boolean;
 }
 export interface IGeneratorProperties {
     [key: string]: IGeneratorProperty;
@@ -347,10 +345,44 @@ ${title}:
 ${examples}
 \`\`\``;
         } else {
+            const args_values: string[] = [];
+            const named_values: string[] = [];
+            Object.keys(generator.properties)
+                .filter(key => {
+                    const property: IGeneratorProperty = generator.properties[key];
+                    if (
+                        property &&
+                        !property.hidden &&
+                        property.$default !== undefined
+                    ) {
+                        return property.$default.$source === 'argv';
+                    }
+                })
+                .forEach(key => {
+                    const value = `argsvalue${args_values.length + 1}`;
+                    args_values.push(
+                        `${value}`
+                    );
+                });
+            Object.keys(generator.properties)
+                .filter(propertyKey => !generator.properties[propertyKey].hidden &&
+                    generator.properties[propertyKey].$default === undefined &&
+                    generator.properties[propertyKey].default === undefined)
+                .forEach(key => {
+                    const value = `namedvalue${named_values.length + 1}`;
+                    named_values.push(
+                        `--${key} ${value}`
+                    );
+                });
+            const args = [
+                generator.id,
+                ...args_values,
+                ...named_values
+            ];
             exampleMarkdown = `
 Example:
 \`\`\`bash
-schematics ${rootPackage.name}:${generator.id}
+schematics ${rootPackage.name}:${args.join(' ')}
 \`\`\``;
         }
         return exampleMarkdown;

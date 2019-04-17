@@ -87,7 +87,7 @@ _See code: [src/folder/generator-2/index.ts](https://github.com/EndyKaufman/sche
 
 Example:
 ```bash
-schematics fake-generator:generator-4
+schematics fake-generator:generator-4 --with-named namedvalue1
 ```
 
 ### Parameters
@@ -105,12 +105,13 @@ _See code: [src/folder/generator-4/index.ts](https://github.com/EndyKaufman/sche
 
 Example:
 ```bash
-schematics fake-generator:generator-6
+schematics fake-generator:generator-6 argsvalue1 --with-named namedvalue1
 ```
 
 ### Parameters
 | Name | Type | Description | Default |
 |------|:----:|------------:|--------:|
+| with-default-argv | {string} | With default argv. | {"$source":"argv","index":0} |
 | with-default | {string} | With default. | "." |
 | with-named | *required* {string} | With named | none |
 
