@@ -37,6 +37,7 @@ export interface IPackage {
         [key: string]: string
     };
     parsedRepositoryData?: {
+        gitConfig?: { url: string, branch: string } | undefined;
         host: string;
         owner: string;
         repository: string;
@@ -168,29 +169,40 @@ export async function collectGenerator(rootPackage: IPackage, path: string): Pro
     }
     return generator;
 }
-export async function loadRootPackage(rootPath: string): Promise<IPackage> {
+export async function loadRootPackage(rootPath: string): Promise<IPackage | undefined> {
+    const path = ((rootPath && existsSync(join(process.cwd(), rootPath))) ? join(process.cwd(), rootPath) : rootPath) || process.cwd();
+    let packageData: IPackage | undefined;
+    packageData = undefined;
     try {
-        const packageData: IPackage = await normalizePackage(
-            JSON.parse(readFileSync(join(rootPath, 'package.json')).toString())
-        );
-        if (!packageData.name) {
-            packageData.name = basename(rootPath);
+        packageData = await normalizePackage({
+            ...JSON.parse(readFileSync(join(path, 'package.json')).toString()),
+            path
+        });
+        const repositoryFromGitConfig = Boolean(packageData.parsedRepositoryData && packageData.parsedRepositoryData.gitConfig);
+        let localPath = '/';
+        if (repositoryFromGitConfig) {
+            let gitFolder: string | undefined;
+            try {
+                gitFolder = await findGitFolder(path);
+            } catch (error) {
+                gitFolder = undefined;
+            }
+            if (gitFolder) {
+                localPath = path.replace(gitFolder, '');
+                if (localPath === '') {
+                    localPath = '/';
+                }
+            }
         }
         return {
-            path: existsSync(join(process.cwd(), rootPath)) ? join(process.cwd(), rootPath) : rootPath,
-            localPath: rootPath,
-            gitPath: packageData.parsedRepositoryData && packageData.parsedRepositoryData.repository,
-            ...packageData
+            ...packageData,
+            path: packageData.path,
+            localPath: localPath,
+            gitPath: packageData.parsedRepositoryData && packageData.parsedRepositoryData.repository
         };
     } catch (error) {
-        return {
-            name: basename(rootPath),
-            path: rootPath,
-            gitPath: undefined,
-            localPath: rootPath,
-            dependencies: {},
-            devDependencies: {}
-        };
+        console.error(error);
+        return packageData;
     }
 }
 export function loadRootReadme(rootPackage: IPackage): string {
@@ -228,13 +240,19 @@ export async function loadGenerator(rootPackage: IPackage, path: string): Promis
     }
     const name = title.replace(new RegExp(' ', 'g'), '-').toLowerCase();
     const gitFolder = await findGitFolder(path);
-    const localPath = resolve(path).replace(resolve(join(gitFolder || rootPackage.path, rootPackage.localPath, 'src')), '');
     const branch = rootPackage.parsedRepositoryData && rootPackage.parsedRepositoryData.branch;
+    const gitConfig = rootPackage.parsedRepositoryData && rootPackage.parsedRepositoryData.gitConfig;
+    const localPath = resolve(path).replace(
+        resolve(
+            join((gitConfig && gitFolder) || rootPackage.path, rootPackage.localPath, 'src')
+        ),
+        ''
+    );
     return {
         name,
         path,
         localPath,
-        gitPath: `${rootPackage.gitPath || ''}/${join('blob', branch || '', rootPackage.localPath, 'src', localPath || '')}`,
+        gitPath: `${rootPackage.gitPath || ''}/${join('blob', branch || 'master', rootPackage.localPath, 'src', localPath || '')}`,
         ...schema,
         title: title,
         description: (schema.description || '')
@@ -425,71 +443,80 @@ schematics ${rootPackage.name}:<generator name> <arguments>
 ${generatorsMarkdown}`;
 }
 export async function transformGeneratorsToMarkdown(rootPath: string): Promise<IGenerator[]> {
-    const rootPackage: IPackage = await loadRootPackage(rootPath);
-    const rootReadme: string = loadRootReadme(rootPackage);
     let generators: IGenerator[] = [];
-    try {
-        generators = (await collectGenerators(rootPackage))
-            .filter(generator => !generator.hidden);
-    } catch (error) {
-        console.error(error);
-    }
-    const headerMardown = createHeader(rootPackage, generators);
-    const generatorsMarkdown = generators.map(
-        generator =>
-            `${transformGeneratorToMarkdown(rootPackage, generator)}\n`
-    ).join('\n');
-    const newReadme = [
-        headerMardown,
-        generatorsMarkdown
-    ].join('\n');
-    const before = rootReadme.split(START_GENERATORS)[0];
-    const after = rootReadme.split(STOP_GENERATORS)[1];
-    if (after) {
-        const newContent = rootReadme.replace(
-            rootReadme,
-            [before + START_GENERATORS, newReadme, STOP_GENERATORS + after].join('\n')
-        );
-        saveRootReadme(rootPath, newContent);
+    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath);
+    if (rootPackage) {
+        const rootReadme: string = loadRootReadme(rootPackage);
+        try {
+            generators = (await collectGenerators(rootPackage))
+                .filter(generator => !generator.hidden);
+        } catch (error) {
+            console.error(error);
+        }
+        const headerMardown = createHeader(rootPackage, generators);
+        const generatorsMarkdown = generators.map(
+            generator =>
+                `${transformGeneratorToMarkdown(rootPackage, generator)}\n`
+        ).join('\n');
+        const newReadme = [
+            headerMardown,
+            generatorsMarkdown
+        ].join('\n');
+        const before = rootReadme.split(START_GENERATORS)[0];
+        const after = rootReadme.split(STOP_GENERATORS)[1];
+        if (after) {
+            const newContent = rootReadme.replace(
+                rootReadme,
+                [before + START_GENERATORS, newReadme, STOP_GENERATORS + after].join('\n')
+            );
+            saveRootReadme(rootPackage.path, newContent);
+        } else {
+            const newContent = rootReadme.replace(
+                rootReadme,
+                [before + START_GENERATORS, newReadme, STOP_GENERATORS].join('\n')
+            );
+            saveRootReadme(rootPackage.path, newContent);
+        }
     } else {
-        const newContent = rootReadme.replace(
-            rootReadme,
-            [before + START_GENERATORS, newReadme, STOP_GENERATORS].join('\n')
-        );
-        saveRootReadme(rootPath, newContent);
+        console.error(`Not founded package.json`);
     }
     return generators;
 }
-export async function transformGeneratorsToCollections(rootPath: string): Promise<any> {
-    const rootPackage: IPackage = await loadRootPackage(rootPath);
-    let generators: IGenerator[] = [];
-    try {
-        generators = await collectGenerators(rootPackage);
-    } catch (error) {
-        console.error(error);
-    }
+export async function transformGeneratorsToCollections(rootPath: string): Promise<ICollection> {
     const collections: ICollection = {
         $schema: './node_modules/@angular-devkit/schematics/collection-schema.json',
         schematics: {}
     };
-    generators
-        .forEach(
-            generator => {
-                collections.schematics[generator.id] = {
-                    title: generator.title || generator.id,
-                    description: generator.description || generator.id,
-                    factory: `.${dirname(generator.localPath)}`,
-                    schema: `.${generator.localPath}`,
-                    ...(generator.hidden ? { hidden: true } : {})
-                };
-            }
-        );
-    saveCollection(rootPackage.path, collections);
+    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath);
+    let generators: IGenerator[] = [];
+    if (rootPackage) {
+        try {
+            generators = await collectGenerators(rootPackage);
+        } catch (error) {
+            console.error(error);
+        }
+        generators
+            .forEach(
+                generator => {
+                    collections.schematics[generator.id] = {
+                        title: generator.title || generator.id,
+                        description: generator.description || generator.id,
+                        factory: `.${dirname(generator.localPath)}`,
+                        schema: `.${generator.localPath}`,
+                        ...(generator.hidden ? { hidden: true } : {})
+                    };
+                }
+            );
+        saveCollection(rootPackage.path, collections);
+    } else {
+        console.error(`Not founded package.json`);
+    }
     return collections;
 }
 export async function normalizePackage(rootPackage: IPackage) {
     let gitRemoteOriginUrlValue = '';
-    let gitConfig: { url: string, branch: string } = { url: '', branch: '' };
+    let gitConfig: { url: string, branch: string } | undefined;
+    gitConfig = undefined;
     if (
         !rootPackage.repository ||
         (typeof rootPackage.repository !== 'string' && !rootPackage.repository.url)
@@ -518,12 +545,16 @@ export async function normalizePackage(rootPackage: IPackage) {
         const browse = repo.browse();
         const parsedBrowse = url.parse(browse);
         rootPackage.parsedRepositoryData = {
+            gitConfig: gitConfig,
             host: (repo.domain ? (parsedBrowse.protocol + (parsedBrowse.slashes ? '//' : '') + repo.domain) : null) || '',
             owner: repo.user || '',
             repoUrl: repo.project,
             repository: browse,
-            branch: gitConfig.branch || 'master'
+            branch: (gitConfig && gitConfig.branch) || 'master'
         };
+    }
+    if (!rootPackage.name) {
+        rootPackage.name = basename(rootPackage.path);
     }
     return rootPackage;
 }
@@ -534,7 +565,7 @@ export async function getGitconfig(cwd = process.cwd()) {
     );
     const config: any = await pGitconfig(cwd);
     const url = config && config.remote.origin && config.remote.origin.url;
-    const branch = config && config.branch && Object.keys(config.branch)[0] || 'master';
+    const branch = config && config.branch && Object.keys(config.branch)[0];
 
     if (!url) {
         throw new Error('Couldn\'t find origin url');

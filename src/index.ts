@@ -14,17 +14,21 @@ class SchematicsReadmeCli extends Command {
       args.path = '.';
     }
     if (args.path === '.') {
-      args.path = process.cwd();
+      args.path = undefined;
     }
     try {
       const generators = await transformGeneratorsToMarkdown(
         args.path
       );
+      this.log(`Collected ${generators.length} generators to "README.md"`);
+    } catch (error) {
+      console.log(error);
+    }
+    try {
       const collections = await transformGeneratorsToCollections(
         args.path
       );
-      this.log(`Collected ${generators.length} generators!`);
-      return;
+      this.log(`Collected ${Object.keys(collections.schematics).length} generators to "src/collection.json"`);
     } catch (error) {
       console.log(error);
     }
