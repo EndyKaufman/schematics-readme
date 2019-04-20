@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/EndyKaufman/schematics-readme/compare/1.0.1...1.1.0) (2019-04-20)
+
+
+### Bug Fixes
+
+* Update work with target folders and correct detect repository from package.json ([71162f0](https://github.com/EndyKaufman/schematics-readme/commit/71162f0))
+
+
+### Features
+
+* Add support manual change branch name used for generate README.md ([7de5b8f](https://github.com/EndyKaufman/schematics-readme/commit/7de5b8f))
+
+
+
 ## [1.0.1](https://github.com/EndyKaufman/schematics-readme/compare/1.0.0...1.0.1) (2019-04-17)
 
 
