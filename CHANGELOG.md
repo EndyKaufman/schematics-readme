@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/EndyKaufman/schematics-readme/compare/1.1.0...1.1.1) (2019-04-20)
+
+
+### Bug Fixes
+
+* Update create link to svg badge for current version ([858b63e](https://github.com/EndyKaufman/schematics-readme/commit/858b63e))
+
+
+
 # [1.1.0](https://github.com/EndyKaufman/schematics-readme/compare/1.0.1...1.1.0) (2019-04-20)
 
 
