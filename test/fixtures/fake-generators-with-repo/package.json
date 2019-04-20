@@ -1,0 +1,14 @@
+{
+  "name": "fake-generators-with-repo",
+  "description": "Fake generators for test",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EndyKaufman/fake-generators-with-repo.git"
+  },
+  "dependencies": {
+    "typescript": "3.3.3"
+  },
+  "devDependencies": {
+    "tslint": "4.4.4"
+  }
+}

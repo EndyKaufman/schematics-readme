@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "typescript": "1.1.1",
+    "@angular/core": "3.0.0",
+    "react": "0.0.1"
+  },
+  "devDependencies": {
+    "vue": "0.0.2",
+    "tslint": "2.2.2",
+    "eslint": "9.9.9",
+    "@nestjs/core": "3.0.0"
+  }
+}

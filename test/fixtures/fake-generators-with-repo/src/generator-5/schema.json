@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "generator-5",
+    "type": "object",
+    "properties": {
+        "with-default": {
+            "type": "string",
+            "description": "With default.",
+            "default": "."
+        },
+        "with-named": {
+            "description": "With named",
+            "type": "string",
+            "x-prompt": "Please set named"
+        }
+    },
+    "required": [
+        "with-named"
+    ],
+    "hidden": true
+}
