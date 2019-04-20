@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/EndyKaufman/schematics-readme/compare/1.1.1...1.2.0) (2019-04-20)
+
+
+### Features
+
+* Add support use custom install and usage description in markdown ([7d1497c](https://github.com/EndyKaufman/schematics-readme/commit/7d1497c))
+
+
+
 ## [1.1.1](https://github.com/EndyKaufman/schematics-readme/compare/1.1.0...1.1.1) (2019-04-20)
 
 
