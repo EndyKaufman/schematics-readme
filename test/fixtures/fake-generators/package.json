@@ -2,9 +2,9 @@
   "name": "fake-generators",
   "description": "Fake generators for test",
   "dependencies": {
-    "typescript": "3.3.3"
+    "typescript": "^3.3.3"
   },
   "devDependencies": {
-    "tslint": "4.4.4"
+    "tslint": "~4.4.4"
   }
 }
