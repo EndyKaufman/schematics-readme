@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "generator-1",
+    "type": "object",
+    "title": "Generator 1",
+    "description": "Description for generator 1",
+    "examples": [
+        "generator-1 argv0 --with-default . --with-named name"
+    ],
+    "mainDependencies": {
+        "typescript": "./files/package.json",
+        "@angular/core": "^",
+        "react": "^",
+        "vue": "^"
+    },
+    "devDependencies": {
+        "tslint": "./files/package.json",
+        "eslint": "^",
+        "@angular/cli": "^"
+    },
+    "properties": {
+        "with-default-argv": {
+            "description": "With default argv.",
+            "type": "string",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "Please set argv0"
+        },
+        "with-default": {
+            "type": "string",
+            "description": "With default.",
+            "default": "."
+        },
+        "with-named": {
+            "description": "With named",
+            "type": "string",
+            "x-prompt": "Please set named"
+        }
+    },
+    "required": [
+        "with-named"
+    ]
+}

@@ -5,6 +5,7 @@ class SchematicsReadmeCli extends Command {
   static description = 'Generator README.md file for Angular Schematics collection';
   static flags = {
     version: flags.version({ char: 'v' }),
+    branch: flags.string({ char: 'b', description: 'Active branch name, default: autodetect', required: false }),
     help: flags.help({ char: 'h' }),
   };
   static args = [{ name: 'path' }];
@@ -14,17 +15,23 @@ class SchematicsReadmeCli extends Command {
       args.path = '.';
     }
     if (args.path === '.') {
-      args.path = process.cwd();
+      args.path = undefined;
     }
     try {
       const generators = await transformGeneratorsToMarkdown(
-        args.path
+        args.path,
+        flags.branch
       );
+      this.log(`Collected ${generators.length} generators to "README.md"`);
+    } catch (error) {
+      console.log(error);
+    }
+    try {
       const collections = await transformGeneratorsToCollections(
-        args.path
+        args.path,
+        flags.branch
       );
-      this.log(`Collected ${generators.length} generators!`);
-      return;
+      this.log(`Collected ${Object.keys(collections.schematics).length} generators to "src/collection.json"`);
     } catch (error) {
       console.log(error);
     }
