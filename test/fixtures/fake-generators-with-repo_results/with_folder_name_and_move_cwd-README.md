@@ -10,15 +10,20 @@ Fake generators for test
 * [Available generators](#available-generators)
 
 # Install
+<!-- install -->
 ```bash
 npm install -g @angular-devkit/schematics-cli
 npm install --save-dev fake-generators-with-repo
+# other commands
 ```
+<!-- installstop -->
 
 # Usage
+<!-- usage -->
 ```bash
 schematics fake-generators-with-repo:<generator name> <arguments>
 ```
+<!-- usagestop -->
 
 # Available generators
 * [Generator 1](#generator-1) - Description for generator 1
