@@ -31,7 +31,7 @@ describe('schematics-readme', () => {
     .do(() => {
       cwd = process.cwd();
       process.chdir(join(__dirname, 'fixtures/fake-generators'));
-      return cmd.run([]);
+      return cmd.run(['--branch', 'master']);
     })
     .it('Without folder name and move cwd and not set repository', ctx => {
       process.chdir(cwd);
@@ -48,7 +48,7 @@ Collected 6 generators to "src/collection.json"
   test
     .stdout()
     .stderr()
-    .do(() => cmd.run(['test/fixtures/fake-generators']))
+    .do(() => cmd.run(['test/fixtures/fake-generators', '--branch', 'master']))
     .it('With folder name and not set repository', ctx => {
       expect(ctx.stdout).to.contain(
         `Collected 4 generators to "README.md"
@@ -66,7 +66,7 @@ Collected 6 generators to "src/collection.json"
     .do(() => {
       cwd = process.cwd();
       process.chdir(join(__dirname, 'fixtures/fake-generators-with-repo'));
-      return cmd.run([]);
+      return cmd.run(['--branch', 'master']);
     })
     .it('Without folder name and move cwd and set repository', ctx => {
       process.chdir(cwd);
@@ -83,7 +83,7 @@ Collected 6 generators to "src/collection.json"
   test
     .stdout()
     .stderr()
-    .do(() => cmd.run(['test/fixtures/fake-generators-with-repo']))
+    .do(() => cmd.run(['test/fixtures/fake-generators-with-repo', '--branch', 'master']))
     .it('With folder name and set repository', ctx => {
       expect(ctx.stdout).to.contain(
         `Collected 4 generators to "README.md"

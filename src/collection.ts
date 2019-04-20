@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import * as gitBranch from 'git-branch';
 import * as gitconfig from 'gitconfiglocal';
 import { basename, dirname, join, resolve } from 'path';
 import * as recursive from 'recursive-readdir';
@@ -8,7 +9,6 @@ const getPkgRepo = require('get-pkg-repo');
 const url = require('url');
 export const START_GENERATORS = '<!-- generators -->';
 export const STOP_GENERATORS = '<!-- generatorsstop -->';
-
 
 export interface ICollection {
     $schema: './node_modules/@angular-devkit/schematics/collection-schema.json';
@@ -169,15 +169,18 @@ export async function collectGenerator(rootPackage: IPackage, path: string): Pro
     }
     return generator;
 }
-export async function loadRootPackage(rootPath: string): Promise<IPackage | undefined> {
+export async function loadRootPackage(rootPath: string, activeBranch?: string): Promise<IPackage | undefined> {
     const path = ((rootPath && existsSync(join(process.cwd(), rootPath))) ? join(process.cwd(), rootPath) : rootPath) || process.cwd();
     let packageData: IPackage | undefined;
     packageData = undefined;
     try {
-        packageData = await normalizePackage({
-            ...JSON.parse(readFileSync(join(path, 'package.json')).toString()),
-            path
-        });
+        packageData = await normalizePackage(
+            {
+                ...JSON.parse(readFileSync(join(path, 'package.json')).toString()),
+                path
+            },
+            activeBranch
+        );
         const repositoryFromGitConfig = Boolean(packageData.parsedRepositoryData && packageData.parsedRepositoryData.gitConfig);
         let localPath = '/';
         if (repositoryFromGitConfig) {
@@ -442,9 +445,9 @@ schematics ${rootPackage.name}:<generator name> <arguments>
 # Available generators
 ${generatorsMarkdown}`;
 }
-export async function transformGeneratorsToMarkdown(rootPath: string): Promise<IGenerator[]> {
+export async function transformGeneratorsToMarkdown(rootPath: string, activeBranch?: string): Promise<IGenerator[]> {
     let generators: IGenerator[] = [];
-    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath);
+    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath, activeBranch);
     if (rootPackage) {
         const rootReadme: string = loadRootReadme(rootPackage);
         try {
@@ -482,12 +485,12 @@ export async function transformGeneratorsToMarkdown(rootPath: string): Promise<I
     }
     return generators;
 }
-export async function transformGeneratorsToCollections(rootPath: string): Promise<ICollection> {
+export async function transformGeneratorsToCollections(rootPath: string, activeBranch?: string): Promise<ICollection> {
     const collections: ICollection = {
         $schema: './node_modules/@angular-devkit/schematics/collection-schema.json',
         schematics: {}
     };
-    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath);
+    const rootPackage: IPackage | undefined = await loadRootPackage(rootPath, activeBranch);
     let generators: IGenerator[] = [];
     if (rootPackage) {
         try {
@@ -513,7 +516,7 @@ export async function transformGeneratorsToCollections(rootPath: string): Promis
     }
     return collections;
 }
-export async function normalizePackage(rootPackage: IPackage) {
+export async function normalizePackage(rootPackage: IPackage, activeBranch?: string) {
     let gitRemoteOriginUrlValue = '';
     let gitConfig: { url: string, branch: string } | undefined;
     gitConfig = undefined;
@@ -522,7 +525,7 @@ export async function normalizePackage(rootPackage: IPackage) {
         (typeof rootPackage.repository !== 'string' && !rootPackage.repository.url)
     ) {
         try {
-            gitConfig = await getGitconfig(rootPackage.path);
+            gitConfig = await getGitconfig(rootPackage.path, activeBranch);
             gitRemoteOriginUrlValue = gitConfig.url;
         } catch (err) {
             gitRemoteOriginUrlValue = '';
@@ -558,22 +561,28 @@ export async function normalizePackage(rootPackage: IPackage) {
     }
     return rootPackage;
 }
-export async function getGitconfig(cwd = process.cwd()) {
+export async function getGitconfig(cwd = process.cwd(), activeBranch?: string) {
     const pGitconfig = promisify<any>(
         (dir: string, cb: any) =>
             gitconfig(dir, {}, cb)
     );
     const config: any = await pGitconfig(cwd);
     const url = config && config.remote.origin && config.remote.origin.url;
-    const branch = config && config.branch && Object.keys(config.branch)[0];
-
+    const branch = activeBranch || (config && config.branch && Object.keys(config.branch)[0]);
+    let detectedBranch = branch;
     if (!url) {
         throw new Error('Couldn\'t find origin url');
     }
-
+    if (!activeBranch) {
+        try {
+            detectedBranch = await gitBranch(cwd);
+        } catch (error) {
+            detectedBranch = branch;
+        }
+    }
     return {
         url,
-        branch
+        branch: detectedBranch
     };
 }
 export async function findGitFolder(dir: string): Promise<string | undefined> {
