@@ -5,9 +5,9 @@
     "react": "0.0.1"
   },
   "devDependencies": {
-    "vue": "0.0.2",
-    "tslint": "2.2.2",
-    "eslint": "9.9.9",
+    "vue": "<=0.0.2",
+    "tslint": ">=2.2.2",
+    "eslint": "9.9.9-beta.19",
     "@nestjs/core": "3.0.0"
   }
 }

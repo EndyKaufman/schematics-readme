@@ -339,17 +339,13 @@ ${parametrs}`;
         let dependenciesMarkdown = '';
         if (generator[dependenciesType] && Object.keys(generator[dependenciesType]).length > 0) {
             const dependencies = Object.keys(generator[dependenciesType]).map((key, index) => {
-                const version = generator[dependenciesType][key].replace(
-                    new RegExp('=', 'g'), ''
-                ).replace(
-                    new RegExp('<', 'g'), ''
-                ).replace(
-                    new RegExp('>', 'g'), ''
-                ).replace(
-                    new RegExp('~', 'g'), ''
-                ).replace(
-                    new RegExp('^', 'g'), ''
-                );
+                const version = generator[dependenciesType][key]
+                    .split('=').join('')
+                    .split('<').join('')
+                    .split('>').join('')
+                    .split('~').join('')
+                    .split('^').join('')
+                    .split('-').join('--');
                 const npmUrl = `https://www.npmjs.com/package/${key}`;
                 const currentVersionImage = `https://badge.fury.io/js/${encodeURIComponent(key)}.svg`;
                 const usedVersionImage = `https://img.shields.io/badge/npm_package-${version}-9cf.svg`;
