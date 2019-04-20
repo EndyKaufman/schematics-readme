@@ -9,6 +9,10 @@ const getPkgRepo = require('get-pkg-repo');
 const url = require('url');
 export const START_GENERATORS = '<!-- generators -->';
 export const STOP_GENERATORS = '<!-- generatorsstop -->';
+export const START_INSTALL = '<!-- install -->\n';
+export const STOP_INSTALL = '\n<!-- installstop -->';
+export const START_USAGE = '<!-- usage -->\n';
+export const STOP_USAGE = '\n<!-- usagestop -->';
 
 export interface ICollection {
     $schema: './node_modules/@angular-devkit/schematics/collection-schema.json';
@@ -217,8 +221,8 @@ export function loadRootReadme(rootPackage: IPackage): string {
 
 Descriptions for ${rootPackage.name}
 
-<!-- generators -->
-<!-- generatorsstop -->
+${START_GENERATORS}
+${STOP_GENERATORS}
 
 # License
 
@@ -417,7 +421,24 @@ schematics ${rootPackage.name}:${args.join(' ')}
         return exampleMarkdown;
     }
 }
-export function createHeader(rootPackage: IPackage, generators: IGenerator[]) {
+export function createHeader(rootPackage: IPackage, rootReadme: string, generators: IGenerator[]) {
+    let installMarkdown = (
+        rootReadme.split(START_INSTALL).length > 0 ? rootReadme.split(START_INSTALL)[1] || '' : ''
+    ).split(STOP_INSTALL)[0];
+    let usageMarkdown = (
+        rootReadme.split(START_USAGE).length > 0 ? rootReadme.split(START_USAGE)[1] || '' : ''
+    ).split(STOP_USAGE)[0];
+    if (!installMarkdown) {
+        installMarkdown = `\`\`\`bash
+npm install -g @angular-devkit/schematics-cli
+npm install --save-dev ${rootPackage.name}
+\`\`\``;
+    }
+    if (!usageMarkdown) {
+        usageMarkdown = `\`\`\`bash
+schematics ${rootPackage.name}:<generator name> <arguments>
+\`\`\``;
+    }
     const generatorsMarkdown = generators.map(
         generator =>
             `* [${generator.title}](#${generator.name}) - ${generator.description || generator.id}`
@@ -428,15 +449,10 @@ export function createHeader(rootPackage: IPackage, generators: IGenerator[]) {
 * [Available generators](#available-generators)
 
 # Install
-\`\`\`bash
-npm install -g @angular-devkit/schematics-cli
-npm install --save-dev ${rootPackage.name}
-\`\`\`
+${START_INSTALL + installMarkdown + STOP_INSTALL}
 
 # Usage
-\`\`\`bash
-schematics ${rootPackage.name}:<generator name> <arguments>
-\`\`\`
+${START_USAGE + usageMarkdown + STOP_USAGE}
 
 # Available generators
 ${generatorsMarkdown}`;
@@ -452,7 +468,7 @@ export async function transformGeneratorsToMarkdown(rootPath: string, activeBran
         } catch (error) {
             console.error(error);
         }
-        const headerMardown = createHeader(rootPackage, generators);
+        const headerMardown = createHeader(rootPackage, rootReadme, generators);
         const generatorsMarkdown = generators.map(
             generator =>
                 `${transformGeneratorToMarkdown(rootPackage, generator)}\n`
