@@ -29,7 +29,7 @@
     "@types/recursive-readdir": "^2.2.0",
     "@types/semver-diff": "^2.1.1",
     "cli-progress": "^2.1.1",
-    "get-pkg-repo": "^4.1.0",
+    "get-pkg-repo": "^4.1.1",
     "git-branch": "^2.0.1",
     "gitconfiglocal": "^2.1.0",
     "normalize-package-data": "^2.5.0",
