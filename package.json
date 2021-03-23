@@ -32,7 +32,7 @@
     "get-pkg-repo": "^4.1.0",
     "git-branch": "^2.0.1",
     "gitconfiglocal": "^2.1.0",
-    "normalize-package-data": "^2.5.0",
+    "normalize-package-data": "^3.0.0",
     "recursive-readdir": "^2.2.2",
     "semver-diff": "^2.1.0",
     "tslib": "^1.9.3"
